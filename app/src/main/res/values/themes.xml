@@ -1,5 +1,5 @@
 <resources>
-    <style name="Base.Theme.ParkedCarFinder.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Base.Theme.Notes.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/purple500</item>
         <item name="colorPrimaryVariant">@color/purple700</item>
         <item name="colorOnPrimary">@color/white</item>
