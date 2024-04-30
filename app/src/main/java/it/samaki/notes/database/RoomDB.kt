@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import it.samaki.notes.models.Notes
 
+@Suppress("unused")
 @Database(entities = [Notes::class], version = 1, exportSchema = false)
 abstract class RoomDB : RoomDatabase() {
     companion object {

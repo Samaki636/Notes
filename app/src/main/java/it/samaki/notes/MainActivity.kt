@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         setCurrentFragment(notesFragment)
 
         bottomNavigationView.setOnItemSelectedListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.navigation_notes -> setCurrentFragment(notesFragment)
                 R.id.navigation_to_dos -> setCurrentFragment(toDosFragment)
             }
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setCurrentFragment(fragment: Fragment)=
+    private fun setCurrentFragment(fragment: Fragment) =
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment)
             commit()

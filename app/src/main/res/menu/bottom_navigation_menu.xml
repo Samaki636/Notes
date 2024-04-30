@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_notes"
-        android:title="@string/notes"
-        android:icon="@drawable/baseline_notes_24" />
+        android:icon="@drawable/baseline_notes_24"
+        android:title="@string/notes" />
     <item
         android:id="@+id/navigation_to_dos"
-        android:title="@string/to_dos"
-        android:icon="@drawable/baseline_done_24" />
+        android:icon="@drawable/baseline_done_24"
+        android:title="@string/to_dos" />
 </menu>

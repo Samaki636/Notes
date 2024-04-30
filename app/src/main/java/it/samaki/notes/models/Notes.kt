@@ -4,10 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+@Suppress("unused")
 @Entity(tableName = "notes")
 class Notes {
     @PrimaryKey(autoGenerate = true)
-    val ID = 0
+    val id = 0
 
     @ColumnInfo(name = "title")
     var title = ""
