@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Note</string>
-    <string name="notes">Note</string>
+    <string name="note">Nota</string>
     <string name="to_dos">Cose da fare</string>
     <string name="add_note">Aggiungi nota</string>
     <string name="title">Titolo</string>
     <string name="date">Data</string>
     <string name="starred">Preferito</string>
+    <string name="notes">Note</string>
 </resources>

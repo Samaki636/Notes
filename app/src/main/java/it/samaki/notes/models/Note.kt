@@ -6,15 +6,15 @@ import androidx.room.PrimaryKey
 
 @Suppress("unused")
 @Entity(tableName = "notes")
-class Notes {
+class Note {
     @PrimaryKey(autoGenerate = true)
-    val id = 0
+    var id = 0
 
     @ColumnInfo(name = "title")
     var title = ""
 
-    @ColumnInfo(name = "notes")
-    var notes = ""
+    @ColumnInfo(name = "note")
+    var note = ""
 
     @ColumnInfo(name = "date")
     var date = ""
