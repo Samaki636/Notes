@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import it.samaki.notes.models.Note
 
-@Suppress("unused")
 @Dao
 interface MainDAO {
     @Insert(onConflict = REPLACE)
