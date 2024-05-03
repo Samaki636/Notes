@@ -3,9 +3,10 @@ package it.samaki.notes.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "notes")
-class Note {
+class Note : Serializable {
     @PrimaryKey(autoGenerate = true)
     var id = 0
 
@@ -13,7 +14,7 @@ class Note {
     var title = ""
 
     @ColumnInfo(name = "note")
-    var note = ""
+    var content = ""
 
     @ColumnInfo(name = "date")
     var date = ""

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.samaki.notes.adapters.NotesListAdapter
@@ -20,7 +21,7 @@ class NotesFragment : Fragment() {
     private lateinit var notesListAdapter: NotesListAdapter
     private lateinit var fabAdd: FloatingActionButton
     private lateinit var database: RoomDB
-    private lateinit var notes: List<Note>
+    private var notes: MutableList<Note> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,28 +32,34 @@ class NotesFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recycler_home)
         fabAdd = view.findViewById(R.id.fab_add_note)
         database = RoomDB.getInstance(requireContext())
-        notes = database.mainDAO().getAll()
+        notes = database.mainDAO().getAll().toMutableList()
 
-        updateRecycler(notes)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        fabAdd.setOnClickListener {
-            fun onClick(view: View) {
-                val intent = Intent(context, AddNoteActivity::class.java)
-                val startForResult = registerForActivityResult(
-                    ActivityResultContracts.StartActivityForResult()) { result ->
-                    if (result.resultCode == RESULT_OK) {
-                        // Handle successful result
-                    } else {
-                        // Handle canceled or failed result
-                    }
-                }
-                startForResult.launch(intent)            }
+        updateRecycler()
+
+        val startForResult = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val newNote = result.data?.getSerializableExtra("note")!! as Note
+                database.mainDAO().insert(newNote)
+                notes.clear()
+                notes.addAll(database.mainDAO().getAll())
+                notesListAdapter.notifyDataSetChanged()
+            } else {
+                // Handle canceled or failed result
+            }
         }
 
-        return inflater.inflate(R.layout.fragment_notes, container, false)
+        fabAdd.setOnClickListener {
+            val intent = Intent(requireContext(), AddNoteActivity::class.java)
+            startForResult.launch(intent)
+        }
+        return view
     }
 
-    private fun updateRecycler(notes: List<Note>) {
+    private fun updateRecycler() {
         recyclerView.setHasFixedSize(true)
         notesListAdapter = NotesListAdapter(requireContext(), notes, noteClickListener)
         recyclerView.adapter = notesListAdapter

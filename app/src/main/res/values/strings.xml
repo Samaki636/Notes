@@ -7,4 +7,7 @@
     <string name="title">Title</string>
     <string name="starred">Starred</string>
     <string name="date">Date</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="toast_text">Please enter a title and a note</string>
 </resources>
