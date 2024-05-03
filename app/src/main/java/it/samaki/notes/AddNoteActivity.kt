@@ -2,8 +2,8 @@ package it.samaki.notes
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -27,9 +27,13 @@ class AddNoteActivity : AppCompatActivity() {
 
         val etTitle = findViewById<EditText>(R.id.et_title)
         val etNote = findViewById<EditText>(R.id.et_note)
-        val bSave = findViewById<Button>(R.id.b_save)
-        var bCancel = findViewById<Button>(R.id.b_cancel)
+        val bSave = findViewById<ImageButton>(R.id.b_save)
+        val bCancel = findViewById<ImageButton>(R.id.b_back)
         lateinit var note: Note
+
+        bCancel.setOnClickListener {
+            finish()
+        }
 
         bSave.setOnClickListener {
             val title = etTitle.text.toString()

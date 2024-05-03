@@ -11,4 +11,6 @@
     <string name="save">Salva</string>
     <string name="cancel">Cancella</string>
     <string name="toast_text">Perfavore, inserisci un titolo ed il contenuto dell\'appunto</string>
+    <string name="back">Indietro</string>
+    <string name="done">Fatto</string>
 </resources>
