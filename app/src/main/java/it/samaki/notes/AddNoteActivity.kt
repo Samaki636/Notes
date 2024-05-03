@@ -43,7 +43,7 @@ class AddNoteActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.toast_text), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val formatter = SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.getDefault())
 
             note = Note()
             note.title = title
