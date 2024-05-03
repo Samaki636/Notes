@@ -9,5 +9,7 @@
     <string name="date">Date</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="take_photo">Take a photo</string>
     <string name="toast_text">Please enter a title and a note</string>
+    <string name="picture">Picture</string>
 </resources>
