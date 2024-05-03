@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -27,9 +27,6 @@ android {
             )
         }
     }
-    buildFeatures {
-        dataBinding = true
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -53,7 +50,8 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    implementation(libs.symbol.processing.api)
+    ksp(libs.androidx.room.compiler)
 
     // RecyclerView
     implementation(libs.recyclerview)

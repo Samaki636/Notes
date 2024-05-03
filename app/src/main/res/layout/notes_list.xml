@@ -25,7 +25,6 @@
                 android:background="@color/grey900"
 
                 android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever"
                 android:padding="8dp"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
