@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
@@ -26,6 +27,7 @@ class NotesFragment : Fragment() {
     private lateinit var database: RoomDB
     private var notes: MutableList<Note> = mutableListOf()
     private lateinit var noteClickStartForResult: ActivityResultLauncher<Intent>
+    private lateinit var searchView : SearchView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +43,8 @@ class NotesFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recycler_home)
         fabAdd = view.findViewById(R.id.fab_add_note)
+        searchView = view.findViewById(R.id.sv_home)
+
         database = RoomDB.getInstance(requireContext())
         notes = database.mainDAO().getAll().toMutableList()
 
@@ -80,7 +84,31 @@ class NotesFragment : Fragment() {
             val intent = Intent(requireContext(), AddNoteActivity::class.java)
             fabAddStartForResult.launch(intent)
         }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filter(newText)
+                return true
+            }
+        })
+
         return view
+    }
+
+    private fun filter(text: String?) {
+        val filteredList: MutableList<Note> = mutableListOf()
+        for (note in notes) {
+            if (note.title.lowercase().contains(text!!.lowercase()) ||
+                note.content.lowercase().contains(text.lowercase()) ||
+                note.date.contains(text)) {
+                filteredList.add(note)
+            }
+            notesListAdapter.updateList(filteredList)
+        }
     }
 
     private fun updateRecycler() {

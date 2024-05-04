@@ -19,7 +19,7 @@
         android:iconifiedByDefault="false"
         android:maxWidth="488dp"
         android:paddingHorizontal="8dp"
-        android:queryBackground="android:color/transparent"
+        android:queryBackground="@color/grey900"
         android:queryHint="@string/search_note" />
 
     <androidx.recyclerview.widget.RecyclerView

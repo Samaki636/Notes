@@ -14,7 +14,7 @@ import it.samaki.notes.models.Note
 
 class NotesListAdapter(
     private val context: Context,
-    private val list: List<Note>,
+    private var list: List<Note>,
     private val listener: NoteClickListener
 ) : RecyclerView.Adapter<NotesViewHolder>() {
 
@@ -26,6 +26,11 @@ class NotesListAdapter(
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    fun updateList(filteredList: MutableList<Note>) {
+        list = filteredList
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
@@ -44,11 +49,11 @@ class NotesListAdapter(
         }
 
         holder.notesContainer.setOnClickListener {
-            listener.onClick(list[holder.adapterPosition])
+            listener.onClick(list[holder.bindingAdapterPosition])
         }
 
         holder.notesContainer.setOnLongClickListener {
-            listener.onLongClick(list[holder.adapterPosition], holder.notesContainer)
+            listener.onLongClick(list[holder.bindingAdapterPosition], holder.notesContainer)
             true
         }
     }
