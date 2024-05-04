@@ -14,10 +14,11 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/sv_background"
         android:iconifiedByDefault="false"
+        android:inputType="textCapSentences"
         android:maxWidth="488dp"
         android:queryBackground="@android:color/transparent"
         android:queryHint="@string/search_note" />

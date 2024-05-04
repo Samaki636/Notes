@@ -4,9 +4,12 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
@@ -20,14 +23,15 @@ import it.samaki.notes.adapters.NotesListAdapter
 import it.samaki.notes.database.RoomDB
 import it.samaki.notes.models.Note
 
-class NotesFragment : Fragment() {
+class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var notesListAdapter: NotesListAdapter
     private lateinit var fabAdd: FloatingActionButton
     private lateinit var database: RoomDB
     private var notes: MutableList<Note> = mutableListOf()
     private lateinit var noteClickStartForResult: ActivityResultLauncher<Intent>
-    private lateinit var searchView : SearchView
+    private lateinit var searchView: SearchView
+    private lateinit var selectedNote: Note
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -126,7 +130,46 @@ class NotesFragment : Fragment() {
         }
 
         override fun onLongClick(note: Note, cardView: CardView) {
-
+            selectedNote = note
+            showPopup(cardView)
         }
+    }
+
+    private fun showPopup(cardView: CardView) {
+        val popupMenu = PopupMenu(requireContext(), cardView)
+        popupMenu.setOnMenuItemClickListener(this)
+        popupMenu.inflate(R.menu.menu_popup)
+        popupMenu.show()
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.popup_star_unstar -> {
+                if (!selectedNote.starred) {
+                    database.mainDAO().star(selectedNote.id, true)
+                    Toast.makeText(requireContext(), "Note starred", Toast.LENGTH_SHORT).show()
+                } else {
+                    database.mainDAO().star(selectedNote.id, false)
+                    Toast.makeText(requireContext(), "Note unstarred", Toast.LENGTH_SHORT).show()
+                }
+
+                notes.clear()
+                notes.addAll(database.mainDAO().getAll())
+                notesListAdapter.notifyDataSetChanged()
+                return true
+            }
+
+            R.id.popup_delete -> {
+                database.mainDAO().delete(selectedNote)
+                notes.remove(selectedNote)
+                notesListAdapter.notifyDataSetChanged()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.note_deleted), Toast.LENGTH_SHORT
+                ).show()
+                return true
+            }
+        }
+        return false
     }
 }

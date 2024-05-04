@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/popup_star_unstar"
+        android:src="@drawable/baseline_star_24"
+        android:title="@string/star_unstar" />
+
+    <item
+        android:id="@+id/popup_delete"
+        android:src="@drawable/baseline_delete_24"
+        android:title="@string/delete_note" />
+</menu>

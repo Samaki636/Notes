@@ -20,4 +20,7 @@ interface MainDAO {
 
     @Delete
     fun delete(note: Note)
+
+    @Query("UPDATE notes SET starred = :starred WHERE id = :id")
+    fun star(id: Int, starred: Boolean)
 }

@@ -14,4 +14,7 @@
     <string name="back">Indietro</string>
     <string name="done">Fatto</string>
     <string name="search_note">Cerca un appunto</string>
+    <string name="delete_note">Cancella appunto</string>
+    <string name="star_unstar">Aggiungi/togli preferito</string>
+    <string name="note_deleted">Nota cancellata</string>
 </resources>

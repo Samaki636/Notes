@@ -13,4 +13,7 @@
     <string name="back">Back</string>
     <string name="done">Done</string>
     <string name="search_note">Search note</string>
+    <string name="delete_note">Delete note</string>
+    <string name="star_unstar">Star/unstar</string>
+    <string name="note_deleted">Note deleted</string>
 </resources>

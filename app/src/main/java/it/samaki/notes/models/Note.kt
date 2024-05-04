@@ -19,6 +19,6 @@ class Note : Serializable {
     @ColumnInfo(name = "date")
     var date = ""
 
-    @ColumnInfo(name = "pinned")
-    var pinned = false
+    @ColumnInfo(name = "starred")
+    var starred = false
 }

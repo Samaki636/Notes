@@ -20,7 +20,7 @@
             android:id="@+id/navigationRail"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            app:menu="@menu/bottom_navigation_menu"
+            app:menu="@menu/menu_bottom_navigation"
             app:menuGravity="center" />
 
         <androidx.fragment.app.FragmentContainerView

@@ -42,7 +42,7 @@ class NotesListAdapter(
         holder.tvDate.text = list[position].date
         holder.tvDate.isSelected = true
 
-        if (list[position].pinned) {
+        if (list[position].starred) {
             holder.ivStar.visibility = View.VISIBLE
         } else {
             holder.ivStar.visibility = View.INVISIBLE
