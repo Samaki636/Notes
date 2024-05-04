@@ -30,6 +30,16 @@ class AddNoteActivity : AppCompatActivity() {
         val bSave = findViewById<ImageButton>(R.id.b_save)
         val bCancel = findViewById<ImageButton>(R.id.b_back)
         lateinit var note: Note
+        var isOldNote = false
+
+        try {
+            note = (intent.getSerializableExtra("it.samaki.notes.old_note") as Note?)!!
+            etTitle.setText(note.title)
+            etNote.setText(note.content)
+            isOldNote = true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         bCancel.setOnClickListener {
             finish()
@@ -45,13 +55,15 @@ class AddNoteActivity : AppCompatActivity() {
             }
             val formatter = SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.getDefault())
 
-            note = Note()
+            if (!isOldNote) {
+                note = Note()
+            }
             note.title = title
             note.content = content
             note.date = formatter.format(Date())
 
             val intent = Intent()
-            intent.putExtra("note", note)
+            intent.putExtra("it.samaki.notes.note", note)
             setResult(RESULT_OK, intent)
             finish()
         }

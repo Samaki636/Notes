@@ -15,8 +15,8 @@ interface MainDAO {
     @Query("SELECT * FROM notes ORDER BY id DESC")
     fun getAll(): List<Note>
 
-    @Query("UPDATE notes SET title = :title, note = :note WHERE id = :id")
-    fun update(id: Int, title: String, note: String)
+    @Query("UPDATE notes SET title = :title, note = :note, date = :date WHERE id = :id")
+    fun update(id: Int, title: String, note: String, date: String)
 
     @Delete
     fun delete(note: Note)

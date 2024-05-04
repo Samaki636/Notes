@@ -12,4 +12,5 @@
     <string name="toast_text">Please enter a title and a note</string>
     <string name="back">Back</string>
     <string name="done">Done</string>
+    <string name="search_note">Search note</string>
 </resources>
