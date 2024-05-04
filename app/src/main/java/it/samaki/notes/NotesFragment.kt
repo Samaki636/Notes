@@ -104,7 +104,8 @@ class NotesFragment : Fragment() {
         for (note in notes) {
             if (note.title.lowercase().contains(text!!.lowercase()) ||
                 note.content.lowercase().contains(text.lowercase()) ||
-                note.date.contains(text)) {
+                note.date.lowercase().contains(text.lowercase())
+            ) {
                 filteredList.add(note)
             }
             notesListAdapter.updateList(filteredList)
