@@ -50,7 +50,7 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         searchView = view.findViewById(R.id.sv_home)
 
         database = RoomDB.getInstance(requireContext())
-        notes = database.mainDAO().getAll().toMutableList()
+        notes = database.noteDAO().getAll().toMutableList()
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -61,9 +61,9 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         ) { result ->
             if (result.resultCode == RESULT_OK) {
                 val newNote = result.data?.getSerializableExtra("it.samaki.notes.note")!! as Note
-                database.mainDAO().insert(newNote)
+                database.noteDAO().insert(newNote)
                 notes.clear()
-                notes.addAll(database.mainDAO().getAll())
+                notes.addAll(database.noteDAO().getAll())
                 notesListAdapter.notifyDataSetChanged()
             } else {
                 // Handle canceled or failed result
@@ -75,9 +75,9 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         ) { result ->
             if (result.resultCode == RESULT_OK) {
                 val newNote = result.data?.getSerializableExtra("it.samaki.notes.note")!! as Note
-                database.mainDAO().update(newNote.id, newNote.title, newNote.content, newNote.date)
+                database.noteDAO().update(newNote.id, newNote.title, newNote.content, newNote.date)
                 notes.clear()
-                notes.addAll(database.mainDAO().getAll())
+                notes.addAll(database.noteDAO().getAll())
                 notesListAdapter.notifyDataSetChanged()
             } else {
                 // Handle canceled or failed result
@@ -146,21 +146,27 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         when (item?.itemId) {
             R.id.popup_star_unstar -> {
                 if (!selectedNote.starred) {
-                    database.mainDAO().star(selectedNote.id, true)
-                    Toast.makeText(requireContext(), "Note starred", Toast.LENGTH_SHORT).show()
+                    database.noteDAO().star(selectedNote.id, true)
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.note_starred), Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    database.mainDAO().star(selectedNote.id, false)
-                    Toast.makeText(requireContext(), "Note unstarred", Toast.LENGTH_SHORT).show()
+                    database.noteDAO().star(selectedNote.id, false)
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.note_unstarred), Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 notes.clear()
-                notes.addAll(database.mainDAO().getAll())
+                notes.addAll(database.noteDAO().getAll())
                 notesListAdapter.notifyDataSetChanged()
                 return true
             }
 
             R.id.popup_delete -> {
-                database.mainDAO().delete(selectedNote)
+                database.noteDAO().delete(selectedNote)
                 notes.remove(selectedNote)
                 notesListAdapter.notifyDataSetChanged()
                 Toast.makeText(

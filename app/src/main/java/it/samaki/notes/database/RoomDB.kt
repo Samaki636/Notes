@@ -5,8 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import it.samaki.notes.models.Note
+import it.samaki.notes.models.ToDo
 
-@Database(entities = [Note::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class, ToDo::class], version = 1, exportSchema = false)
 abstract class RoomDB : RoomDatabase() {
     companion object {
         @Volatile
@@ -29,5 +30,6 @@ abstract class RoomDB : RoomDatabase() {
         }
     }
 
-    abstract fun mainDAO(): MainDAO
+    abstract fun noteDAO(): NoteDAO
+    abstract fun toDoDAO(): ToDoDAO
 }

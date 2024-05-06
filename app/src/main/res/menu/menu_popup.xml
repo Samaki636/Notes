@@ -8,5 +8,5 @@
     <item
         android:id="@+id/popup_delete"
         android:src="@drawable/baseline_delete_24"
-        android:title="@string/delete_note" />
+        android:title="@string/delete" />
 </menu>

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Appunti</string>
     <string name="note">Appunto</string>
-    <string name="to_dos">Cose da fare</string>
+    <string name="to_dos">Promemoria</string>
     <string name="add_note">Aggiungi nota</string>
     <string name="title">Titolo</string>
     <string name="date">Data</string>
@@ -10,11 +10,21 @@
     <string name="notes">Appunti</string>
     <string name="save">Salva</string>
     <string name="cancel">Cancella</string>
-    <string name="toast_text">Perfavore, inserisci un titolo ed il contenuto dell\'appunto</string>
+    <string name="note_toast_text">Perfavore, inserisci un titolo ed il contenuto dell\'appunto</string>
     <string name="back">Indietro</string>
     <string name="done">Fatto</string>
     <string name="search_note">Cerca un appunto</string>
-    <string name="delete_note">Cancella appunto</string>
     <string name="star_unstar">Aggiungi/togli preferito</string>
     <string name="note_deleted">Nota cancellata</string>
+    <string name="search_to_do">Cerca promemoria</string>
+    <string name="add_to_do">Aggiungi promemoria</string>
+    <string name="to_do">Promemoria</string>
+    <string name="to_do_deleted">Promemoria cancellato</string>
+    <string name="content">Contenuto</string>
+    <string name="to_do_toast_text">Perfavore, inserisci il contenuto del promemoria</string>
+    <string name="note_starred">Appunto aggiunta ai preferiti</string>
+    <string name="note_unstarred">Appunto aggiunto ai preferiti</string>
+    <string name="to_do_starred">Promemoria aggiunto ai preferiti</string>
+    <string name="to_do_unstarred">Promemoria rimosso dai preferiti</string>
+    <string name="delete">Cancella</string>
 </resources>

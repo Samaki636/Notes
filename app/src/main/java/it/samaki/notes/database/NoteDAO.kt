@@ -8,7 +8,7 @@ import androidx.room.Query
 import it.samaki.notes.models.Note
 
 @Dao
-interface MainDAO {
+interface NoteDAO {
     @Insert(onConflict = REPLACE)
     fun insert(note: Note)
 

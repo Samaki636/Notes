@@ -1,0 +1,62 @@
+package it.samaki.notes.adapters
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.RecyclerView
+import it.samaki.notes.R
+import it.samaki.notes.ToDoClickListener
+import it.samaki.notes.models.ToDo
+
+class ToDosListAdapter(
+    private val context: Context,
+    private var list: List<ToDo>,
+    private val listener: ToDoClickListener
+) : RecyclerView.Adapter<ToDosViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDosViewHolder {
+        return ToDosViewHolder(
+            LayoutInflater.from(context).inflate(R.layout.to_dos_list, parent, false)
+        )
+    }
+
+    override fun getItemCount(): Int {
+        return list.size
+    }
+
+    fun updateList(filteredList: MutableList<ToDo>) {
+        list = filteredList
+        notifyDataSetChanged()
+    }
+
+    override fun onBindViewHolder(holder: ToDosViewHolder, position: Int) {
+        holder.tvContent.text = list[position].content
+        holder.tvContent.isSelected = true
+
+        holder.checkBox.isChecked = list[position].completed
+
+        holder.toDosContainer.setOnClickListener {
+            listener.onClick(list[holder.bindingAdapterPosition])
+        }
+
+        holder.toDosContainer.setOnLongClickListener {
+            listener.onLongClick(list[holder.bindingAdapterPosition], holder.toDosContainer)
+            true
+        }
+
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            listener.onCheck(list[holder.bindingAdapterPosition], isChecked)
+        }
+    }
+
+}
+
+class ToDosViewHolder(itemView: View) :
+    RecyclerView.ViewHolder(itemView) {
+    val toDosContainer: CardView = itemView.findViewById(R.id.to_dos_container)
+    val tvContent: TextView = itemView.findViewById(R.id.tv_content)
+    val checkBox: CheckBox = itemView.findViewById(R.id.check_box)
+}

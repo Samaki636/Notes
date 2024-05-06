@@ -9,34 +9,29 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import it.samaki.notes.models.Note
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import it.samaki.notes.models.ToDo
 
-class AddNoteActivity : AppCompatActivity() {
+class AddToDoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_add_note)
+        setContentView(R.layout.activity_add_to_do)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val etTitle = findViewById<EditText>(R.id.et_title)
-        val etNote = findViewById<EditText>(R.id.et_note)
+        val etContent = findViewById<EditText>(R.id.et_content)
         val bSave = findViewById<ImageButton>(R.id.b_save)
         val bCancel = findViewById<ImageButton>(R.id.b_back)
-        lateinit var note: Note
-        var isOldNote = false
+        lateinit var toDo: ToDo
+        var isOldToDo = false
 
         try {
-            note = (intent.getSerializableExtra("it.samaki.notes.old_note") as Note?)!!
-            etTitle.setText(note.title)
-            etNote.setText(note.content)
-            isOldNote = true
+            toDo = (intent.getSerializableExtra("it.samaki.notes.old_to_do") as ToDo?)!!
+            etContent.setText(toDo.content)
+            isOldToDo = true
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -46,24 +41,21 @@ class AddNoteActivity : AppCompatActivity() {
         }
 
         bSave.setOnClickListener {
-            val title = etTitle.text.toString()
-            val content = etNote.text.toString()
+            val content = etContent.text.toString()
 
-            if (title.isEmpty() || content.isEmpty()) {
-                Toast.makeText(this, getString(R.string.note_toast_text), Toast.LENGTH_SHORT).show()
+            if (content.isEmpty()) {
+                Toast.makeText(this, getString(R.string.to_do_toast_text), Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
-            val formatter = SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.getDefault())
 
-            if (!isOldNote) {
-                note = Note()
+            if (!isOldToDo) {
+                toDo = ToDo()
             }
-            note.title = title
-            note.content = content
-            note.date = formatter.format(Date())
+            toDo.content = content
 
             val intent = Intent()
-            intent.putExtra("it.samaki.notes.note", note)
+            intent.putExtra("it.samaki.notes.to_do", toDo)
             setResult(RESULT_OK, intent)
             finish()
         }
