@@ -38,9 +38,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="12dp"
-        android:backgroundTint="@color/grey900"
+        android:backgroundTint="@color/purple"
         android:contentDescription="@string/add_to_do"
-        android:src="@drawable/fab_background"
+        android:src="@drawable/fab_foreground"
         app:shapeAppearance="@style/ShapeAppearanceOverlay.Material3.Button" />
 
 </RelativeLayout>
