@@ -22,9 +22,23 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
             android:text="@string/to_do"
             android:textColor="@color/white"
             android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/iv_star"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/starred"
+            android:src="@drawable/baseline_star_24"
+            android:visibility="invisible" />
 
         <CheckBox
             android:id="@+id/check_box"

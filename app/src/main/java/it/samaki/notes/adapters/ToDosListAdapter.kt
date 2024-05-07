@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +39,12 @@ class ToDosListAdapter(
 
         holder.checkBox.isChecked = list[position].completed
 
+        if (list[position].starred) {
+            holder.ivStar.visibility = View.VISIBLE
+        } else {
+            holder.ivStar.visibility = View.INVISIBLE
+        }
+
         holder.toDosContainer.setOnClickListener {
             listener.onClick(list[holder.bindingAdapterPosition])
         }
@@ -58,5 +65,6 @@ class ToDosViewHolder(itemView: View) :
     RecyclerView.ViewHolder(itemView) {
     val toDosContainer: CardView = itemView.findViewById(R.id.to_dos_container)
     val tvContent: TextView = itemView.findViewById(R.id.tv_content)
+    val ivStar: ImageView = itemView.findViewById(R.id.iv_star)
     val checkBox: CheckBox = itemView.findViewById(R.id.check_box)
 }
