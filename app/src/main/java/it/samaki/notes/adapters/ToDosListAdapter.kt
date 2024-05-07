@@ -1,5 +1,6 @@
 package it.samaki.notes.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,7 @@ class ToDosListAdapter(
         return list.size
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateList(filteredList: MutableList<ToDo>) {
         list = filteredList
         notifyDataSetChanged()
