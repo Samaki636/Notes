@@ -64,7 +64,7 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 database.noteDAO().insert(newNote)
                 notes.clear()
                 notes.addAll(database.noteDAO().getAll())
-                notesListAdapter.notifyDataSetChanged()
+                notesListAdapter.notifyItemInserted(0)
             } else {
                 // Handle canceled or failed result
             }
@@ -78,7 +78,9 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 database.noteDAO().update(newNote.id, newNote.title, newNote.content, newNote.date)
                 notes.clear()
                 notes.addAll(database.noteDAO().getAll())
-                notesListAdapter.notifyDataSetChanged()
+                notesListAdapter.notifyItemChanged(notes.indexOfFirst {
+                    it.id == newNote.id
+                })
             } else {
                 // Handle canceled or failed result
             }
@@ -161,14 +163,17 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
                 notes.clear()
                 notes.addAll(database.noteDAO().getAll())
-                notesListAdapter.notifyDataSetChanged()
+                notesListAdapter.notifyItemChanged(notes.indexOfFirst {
+                    it.id == selectedNote.id
+                })
                 return true
             }
 
             R.id.popup_delete -> {
                 database.noteDAO().delete(selectedNote)
+                val index = notes.indexOfFirst { it.id == selectedNote.id }
                 notes.remove(selectedNote)
-                notesListAdapter.notifyDataSetChanged()
+                notesListAdapter.notifyItemRemoved(index)
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.note_deleted), Toast.LENGTH_SHORT

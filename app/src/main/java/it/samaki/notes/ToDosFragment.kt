@@ -65,7 +65,7 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 database.toDoDAO().insert(newToDo)
                 toDos.clear()
                 toDos.addAll(database.toDoDAO().getAll())
-                toDosListAdapter.notifyDataSetChanged()
+                toDosListAdapter.notifyItemInserted(0)
             } else {
                 // Handle canceled or failed result
             }
@@ -79,7 +79,9 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 database.toDoDAO().update(newToDo.id, newToDo.content)
                 toDos.clear()
                 toDos.addAll(database.toDoDAO().getAll())
-                toDosListAdapter.notifyDataSetChanged()
+                toDosListAdapter.notifyItemChanged(toDos.indexOfFirst {
+                    it.id == newToDo.id
+                })
             } else {
                 // Handle canceled or failed result
             }
@@ -138,7 +140,9 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             toDos.clear()
             toDos.addAll(database.toDoDAO().getAll())
             recyclerView.post {
-                toDosListAdapter.notifyDataSetChanged()
+                toDosListAdapter.notifyItemChanged(toDos.indexOfFirst {
+                    it.id == toDo.id
+                })
             }
         }
     }
@@ -169,14 +173,17 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
                 toDos.clear()
                 toDos.addAll(database.toDoDAO().getAll())
-                toDosListAdapter.notifyDataSetChanged()
+                toDosListAdapter.notifyItemChanged(toDos.indexOfFirst {
+                    it.id == selectedToDo.id
+                })
                 return true
             }
 
             R.id.popup_delete -> {
                 database.toDoDAO().delete(selectedToDo)
+                val index = toDos.indexOfFirst { it.id == selectedToDo.id }
                 toDos.remove(selectedToDo)
-                toDosListAdapter.notifyDataSetChanged()
+                toDosListAdapter.notifyItemRemoved(index)
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.to_do_deleted), Toast.LENGTH_SHORT
