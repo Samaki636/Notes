@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("com.google.devtools.ksp")
 }
 
 android {
@@ -47,11 +46,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // Room
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.symbol.processing.api)
-    ksp(libs.androidx.room.compiler)
 
     // RecyclerView
     implementation(libs.recyclerview)

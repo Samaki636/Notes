@@ -21,7 +21,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             app:menu="@menu/menu_bottom_navigation"
-            app:menuGravity="center" />
+            app:menuGravity="center"
+            tools:ignore="InconsistentLayout" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/flFragment"

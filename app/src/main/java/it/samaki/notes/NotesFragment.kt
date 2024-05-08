@@ -1,5 +1,6 @@
 package it.samaki.notes
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
@@ -20,18 +21,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.samaki.notes.adapters.NotesListAdapter
-import it.samaki.notes.database.RoomDB
+import it.samaki.notes.database.DatabaseHelper
 import it.samaki.notes.models.Note
 
 class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var notesListAdapter: NotesListAdapter
     private lateinit var fabAdd: FloatingActionButton
-    private lateinit var database: RoomDB
     private var notes: MutableList<Note> = mutableListOf()
-    private lateinit var noteClickStartForResult: ActivityResultLauncher<Intent>
+    private lateinit var editNoteLauncher: ActivityResultLauncher<Intent>
     private lateinit var searchView: SearchView
     private lateinit var selectedNote: Note
+    private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,50 +46,47 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             insets
         }
 
+        dbHelper = DatabaseHelper(requireContext())
+        notes.clear()
+        notes.addAll(dbHelper.getAllNotes())
+
         recyclerView = view.findViewById(R.id.recycler_home)
         fabAdd = view.findViewById(R.id.fab_add_note)
         searchView = view.findViewById(R.id.sv_home)
-
-        database = RoomDB.getInstance(requireContext())
-        notes = database.noteDAO().getAll().toMutableList()
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         updateRecycler()
 
-        val fabAddStartForResult = registerForActivityResult(
+        val addNoteLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val newNote = result.data?.getSerializableExtra("it.samaki.notes.note")!! as Note
-                database.noteDAO().insert(newNote)
+            if (result.resultCode == RESULT_OK && result.data != null) {
+                val newNote = result.data!!.getSerializableExtra("it.samaki.notes.note") as Note
+                dbHelper.insertNote(newNote)
                 notes.clear()
-                notes.addAll(database.noteDAO().getAll())
+                notes.addAll(dbHelper.getAllNotes())
                 notesListAdapter.notifyItemInserted(0)
-            } else {
-                // Handle canceled or failed result
             }
+            updateRecycler()
         }
 
-        noteClickStartForResult = registerForActivityResult(
+        editNoteLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val newNote = result.data?.getSerializableExtra("it.samaki.notes.note")!! as Note
-                database.noteDAO().update(newNote.id, newNote.title, newNote.content, newNote.date)
-                notes.clear()
-                notes.addAll(database.noteDAO().getAll())
-                notesListAdapter.notifyItemChanged(notes.indexOfFirst {
-                    it.id == newNote.id
-                })
-            } else {
-                // Handle canceled or failed result
+            if (result.resultCode == RESULT_OK && result.data != null) {
+                val editedNote = result.data!!.getSerializableExtra("it.samaki.notes.note") as Note
+                val index = notes.indexOfFirst { it.id == editedNote.id }
+                dbHelper.updateNote(editedNote)
+                notes[index] = editedNote
+                notesListAdapter.notifyItemChanged(index)
             }
+            updateRecycler()
         }
 
         fabAdd.setOnClickListener {
             val intent = Intent(requireContext(), AddNoteActivity::class.java)
-            fabAddStartForResult.launch(intent)
+            addNoteLauncher.launch(intent)
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -105,6 +103,7 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         return view
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun filter(text: String?) {
         val filteredList: MutableList<Note> = mutableListOf()
         for (note in notes) {
@@ -114,25 +113,25 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             ) {
                 filteredList.add(note)
             }
-            notesListAdapter.updateList(filteredList)
         }
+        notes = filteredList
+        notesListAdapter.notifyDataSetChanged()
     }
 
     private fun updateRecycler() {
-        recyclerView.setHasFixedSize(true)
-        notesListAdapter = NotesListAdapter(requireContext(), notes, noteClickListener)
+        notesListAdapter = NotesListAdapter(dbHelper.getNotesCursor(), noteClickListener)
         recyclerView.adapter = notesListAdapter
     }
 
     private val noteClickListener = object : NoteClickListener {
-        override fun onClick(note: Note) {
+        override fun onClick(index: Int) {
             val intent = Intent(requireContext(), AddNoteActivity::class.java)
-            intent.putExtra("it.samaki.notes.old_note", note)
-            noteClickStartForResult.launch(intent)
+            intent.putExtra("it.samaki.notes.old_note", notes[index])
+            editNoteLauncher.launch(intent)
         }
 
-        override fun onLongClick(note: Note, cardView: CardView) {
-            selectedNote = note
+        override fun onLongClick(index: Int, cardView: CardView) {
+            selectedNote = notes[index]
             showPopup(cardView)
         }
     }
@@ -148,29 +147,31 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         when (item?.itemId) {
             R.id.popup_star_unstar -> {
                 if (!selectedNote.starred) {
-                    database.noteDAO().star(selectedNote.id, true)
+                    selectedNote.starred = true
+                    dbHelper.updateNote(selectedNote)
                     Toast.makeText(
                         requireContext(),
                         getString(R.string.note_starred), Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    database.noteDAO().star(selectedNote.id, false)
+                    selectedNote.starred = false
+                    dbHelper.updateNote(selectedNote)
                     Toast.makeText(
                         requireContext(),
                         getString(R.string.note_unstarred), Toast.LENGTH_SHORT
                     ).show()
                 }
 
-                notes.clear()
-                notes.addAll(database.noteDAO().getAll())
-                notesListAdapter.notifyItemChanged(notes.indexOfFirst {
-                    it.id == selectedNote.id
-                })
+                val index = notes.indexOfFirst { it.id == selectedNote.id }
+                notes[index] = selectedNote
+                notesListAdapter.notifyItemChanged(index)
+
+                updateRecycler()
                 return true
             }
 
             R.id.popup_delete -> {
-                database.noteDAO().delete(selectedNote)
+                dbHelper.deleteNote(selectedNote)
                 val index = notes.indexOfFirst { it.id == selectedNote.id }
                 notes.remove(selectedNote)
                 notesListAdapter.notifyItemRemoved(index)
@@ -178,6 +179,7 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                     requireContext(),
                     getString(R.string.note_deleted), Toast.LENGTH_SHORT
                 ).show()
+                updateRecycler()
                 return true
             }
         }

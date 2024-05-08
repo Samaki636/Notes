@@ -37,8 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:backgroundTint="@color/purple"
         android:layout_margin="12dp"
+        android:backgroundTint="@color/purple"
         android:contentDescription="@string/add_note"
         android:src="@drawable/fab_foreground"
         app:shapeAppearance="@style/ShapeAppearanceOverlay.Material3.Button" />

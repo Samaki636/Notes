@@ -56,7 +56,7 @@ class AddNoteActivity : AppCompatActivity() {
             val formatter = SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.getDefault())
 
             if (!isOldNote) {
-                note = Note()
+                note = Note(0, title, content, formatter.format(Date()), false)
             }
             note.title = title
             note.content = content

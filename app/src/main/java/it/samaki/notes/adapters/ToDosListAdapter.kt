@@ -1,7 +1,6 @@
 package it.samaki.notes.adapters
 
-import android.annotation.SuppressLint
-import android.content.Context
+import android.database.Cursor
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,61 +11,54 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import it.samaki.notes.R
 import it.samaki.notes.ToDoClickListener
-import it.samaki.notes.models.ToDo
 
 class ToDosListAdapter(
-    private val context: Context,
-    private var list: List<ToDo>,
+    private val cursor: Cursor,
     private val listener: ToDoClickListener
 ) : RecyclerView.Adapter<ToDosViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDosViewHolder {
         return ToDosViewHolder(
-            LayoutInflater.from(context).inflate(R.layout.to_dos_list, parent, false)
+            listener,
+            LayoutInflater.from(parent.context).inflate(R.layout.to_dos_list, parent, false)
         )
     }
 
     override fun getItemCount(): Int {
-        return list.size
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateList(filteredList: MutableList<ToDo>) {
-        list = filteredList
-        notifyDataSetChanged()
+        return cursor.count
     }
 
     override fun onBindViewHolder(holder: ToDosViewHolder, position: Int) {
-        holder.tvContent.text = list[position].content
-        holder.tvContent.isSelected = true
+        cursor.moveToPosition(position)
+        holder.tvContent.text = cursor.getString(1)
+        holder.checkBox.isChecked = cursor.getInt(2) == 1
 
-        holder.checkBox.isChecked = list[position].completed
-
-        if (list[position].starred) {
+        if (cursor.getInt(3) == 1) {
             holder.ivStar.visibility = View.VISIBLE
         } else {
             holder.ivStar.visibility = View.INVISIBLE
         }
-
-        holder.toDosContainer.setOnClickListener {
-            listener.onClick(list[holder.bindingAdapterPosition])
-        }
-
-        holder.toDosContainer.setOnLongClickListener {
-            listener.onLongClick(list[holder.bindingAdapterPosition], holder.toDosContainer)
-            true
-        }
-
-        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            listener.onCheck(list[holder.bindingAdapterPosition], isChecked)
-        }
     }
-
 }
 
-class ToDosViewHolder(itemView: View) :
+class ToDosViewHolder(listener: ToDoClickListener, itemView: View) :
     RecyclerView.ViewHolder(itemView) {
-    val toDosContainer: CardView = itemView.findViewById(R.id.to_dos_container)
+    private val toDosContainer: CardView = itemView.findViewById(R.id.to_dos_container)
     val tvContent: TextView = itemView.findViewById(R.id.tv_content)
     val ivStar: ImageView = itemView.findViewById(R.id.iv_star)
     val checkBox: CheckBox = itemView.findViewById(R.id.check_box)
+
+    init {
+        itemView.setOnClickListener {
+            listener.onClick(bindingAdapterPosition)
+        }
+
+        itemView.setOnLongClickListener {
+            listener.onLongClick(bindingAdapterPosition, toDosContainer)
+            true
+        }
+
+        checkBox.setOnCheckedChangeListener { _, isChecked ->
+            listener.onCheck(bindingAdapterPosition, isChecked)
+        }
+    }
 }

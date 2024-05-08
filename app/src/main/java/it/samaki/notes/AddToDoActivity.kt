@@ -50,7 +50,7 @@ class AddToDoActivity : AppCompatActivity() {
             }
 
             if (!isOldToDo) {
-                toDo = ToDo()
+                toDo = ToDo(0, content, completed = false, starred = false)
             }
             toDo.content = content
 

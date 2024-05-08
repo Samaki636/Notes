@@ -1,5 +1,6 @@
 package it.samaki.notes
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
@@ -20,18 +21,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.samaki.notes.adapters.ToDosListAdapter
-import it.samaki.notes.database.RoomDB
+import it.samaki.notes.database.DatabaseHelper
 import it.samaki.notes.models.ToDo
 
 class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var toDosListAdapter: ToDosListAdapter
     private lateinit var fabAdd: FloatingActionButton
-    private lateinit var database: RoomDB
     private var toDos: MutableList<ToDo> = mutableListOf()
-    private lateinit var toDosClickStartForResult: ActivityResultLauncher<Intent>
+    private lateinit var editToDoLauncher: ActivityResultLauncher<Intent>
     private lateinit var searchView: SearchView
     private lateinit var selectedToDo: ToDo
+    private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,50 +47,47 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             insets
         }
 
+        dbHelper = DatabaseHelper(requireContext())
+        toDos.clear()
+        toDos.addAll(dbHelper.getAllTodos())
+
         recyclerView = view.findViewById(R.id.recycler_home)
         fabAdd = view.findViewById(R.id.fab_add_to_do)
         searchView = view.findViewById(R.id.sv_home)
-
-        database = RoomDB.getInstance(requireContext())
-        toDos = database.toDoDAO().getAll().toMutableList()
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         updateRecycler()
 
-        val fabAddStartForResult = registerForActivityResult(
+        val addToDoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val newToDo = result.data?.getSerializableExtra("it.samaki.notes.to_do")!! as ToDo
-                database.toDoDAO().insert(newToDo)
+            if (result.resultCode == RESULT_OK && result.data != null) {
+                val newToDo = result.data!!.getSerializableExtra("it.samaki.notes.to_do") as ToDo
+                dbHelper.insertTodo(newToDo)
                 toDos.clear()
-                toDos.addAll(database.toDoDAO().getAll())
+                toDos.addAll(dbHelper.getAllTodos())
                 toDosListAdapter.notifyItemInserted(0)
-            } else {
-                // Handle canceled or failed result
             }
+            updateRecycler()
         }
 
-        toDosClickStartForResult = registerForActivityResult(
+        editToDoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val newToDo = result.data?.getSerializableExtra("it.samaki.notes.to_do")!! as ToDo
-                database.toDoDAO().update(newToDo.id, newToDo.content)
-                toDos.clear()
-                toDos.addAll(database.toDoDAO().getAll())
-                toDosListAdapter.notifyItemChanged(toDos.indexOfFirst {
-                    it.id == newToDo.id
-                })
-            } else {
-                // Handle canceled or failed result
+            if (result.resultCode == RESULT_OK && result.data != null) {
+                val editedToDo = result.data!!.getSerializableExtra("it.samaki.notes.to_do") as ToDo
+                val index = toDos.indexOfFirst { it.id == editedToDo.id }
+                dbHelper.updateTodo(editedToDo)
+                toDos[index] = editedToDo
+                toDosListAdapter.notifyItemChanged(index)
             }
+            updateRecycler()
         }
 
         fabAdd.setOnClickListener {
             val intent = Intent(requireContext(), AddToDoActivity::class.java)
-            fabAddStartForResult.launch(intent)
+            addToDoLauncher.launch(intent)
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -106,6 +104,7 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         return view
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun filter(text: String?) {
         val filteredList: MutableList<ToDo> = mutableListOf()
         for (toDo in toDos) {
@@ -113,37 +112,31 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             ) {
                 filteredList.add(toDo)
             }
-            toDosListAdapter.updateList(filteredList)
         }
+        toDos = filteredList
+        toDosListAdapter.notifyDataSetChanged()
     }
 
     private fun updateRecycler() {
-        recyclerView.setHasFixedSize(true)
-        toDosListAdapter = ToDosListAdapter(requireContext(), toDos, toDoClickListener)
+        toDosListAdapter = ToDosListAdapter(dbHelper.getToDosCursor(), toDoClickListener)
         recyclerView.adapter = toDosListAdapter
     }
 
     private val toDoClickListener = object : ToDoClickListener {
-        override fun onClick(toDo: ToDo) {
+        override fun onClick(index: Int) {
             val intent = Intent(requireContext(), AddToDoActivity::class.java)
-            intent.putExtra("it.samaki.notes.old_to_do", toDo)
-            toDosClickStartForResult.launch(intent)
+            intent.putExtra("it.samaki.notes.old_to_do", toDos[index])
+            editToDoLauncher.launch(intent)
         }
 
-        override fun onLongClick(toDo: ToDo, cardView: CardView) {
-            selectedToDo = toDo
+        override fun onLongClick(index: Int, cardView: CardView) {
+            selectedToDo = toDos[index]
             showPopup(cardView)
         }
 
-        override fun onCheck(toDo: ToDo, isChecked: Boolean) {
-            database.toDoDAO().complete(toDo.id, isChecked)
-            toDos.clear()
-            toDos.addAll(database.toDoDAO().getAll())
-            recyclerView.post {
-                toDosListAdapter.notifyItemChanged(toDos.indexOfFirst {
-                    it.id == toDo.id
-                })
-            }
+        override fun onCheck(index: Int, isChecked: Boolean) {
+            toDos[index].completed = isChecked
+            dbHelper.updateTodo(toDos[index])
         }
     }
 
@@ -158,29 +151,31 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         when (item?.itemId) {
             R.id.popup_star_unstar -> {
                 if (!selectedToDo.starred) {
-                    database.toDoDAO().star(selectedToDo.id, true)
+                    selectedToDo.starred = true
+                    dbHelper.updateTodo(selectedToDo)
                     Toast.makeText(
                         requireContext(),
                         getString(R.string.to_do_starred), Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    database.toDoDAO().star(selectedToDo.id, false)
+                    selectedToDo.starred = false
+                    dbHelper.updateTodo(selectedToDo)
                     Toast.makeText(
                         requireContext(),
                         getString(R.string.to_do_unstarred), Toast.LENGTH_SHORT
                     ).show()
                 }
 
-                toDos.clear()
-                toDos.addAll(database.toDoDAO().getAll())
-                toDosListAdapter.notifyItemChanged(toDos.indexOfFirst {
-                    it.id == selectedToDo.id
-                })
+                val index = toDos.indexOfFirst { it.id == selectedToDo.id }
+                toDos[index] = selectedToDo
+                toDosListAdapter.notifyItemChanged(index)
+
+                updateRecycler()
                 return true
             }
 
             R.id.popup_delete -> {
-                database.toDoDAO().delete(selectedToDo)
+                dbHelper.deleteTodo(selectedToDo)
                 val index = toDos.indexOfFirst { it.id == selectedToDo.id }
                 toDos.remove(selectedToDo)
                 toDosListAdapter.notifyItemRemoved(index)
@@ -188,6 +183,7 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                     requireContext(),
                     getString(R.string.to_do_deleted), Toast.LENGTH_SHORT
                 ).show()
+                updateRecycler()
                 return true
             }
         }
