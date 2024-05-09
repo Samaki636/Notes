@@ -26,4 +26,7 @@
     <string name="to_do_starred">To-do starred</string>
     <string name="to_do_unstarred">To-do unstarred</string>
     <string name="delete">Delete</string>
+    <string name="take_photo">Take a photo</string>
+    <string name="toast_text">Please enter a title and a note</string>
+    <string name="picture">Picture</string>
 </resources>
