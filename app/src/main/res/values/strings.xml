@@ -29,4 +29,5 @@
     <string name="take_photo">Take a photo</string>
     <string name="toast_text">Please enter a title and a note</string>
     <string name="picture">Picture</string>
+    <string name="camera_permission_denied">Camera permission required to take a photo!</string>
 </resources>

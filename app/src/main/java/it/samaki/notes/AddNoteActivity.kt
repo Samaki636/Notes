@@ -21,9 +21,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.Manifest
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 
 class AddNoteActivity : AppCompatActivity() {
     private lateinit var ivPicture: ImageView
+    private lateinit var takePictureLauncher : ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,6 +45,15 @@ class AddNoteActivity : AppCompatActivity() {
         val bCancel = findViewById<ImageButton>(R.id.b_back)
         lateinit var note: Note
         var isOldNote = false
+
+        takePictureLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK && result.data != null) {
+                val imageBitmap = result.data!!.extras?.get("data") as Bitmap
+                ivPicture.setImageBitmap(imageBitmap)
+            }
+        }
 
         try {
             note = (intent.getSerializableExtra("it.samaki.notes.old_note") as Note?)!!
@@ -82,30 +94,30 @@ class AddNoteActivity : AppCompatActivity() {
         fabTakePhoto.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-                // Permission is not granted, request it
                 ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.CAMERA),
                     1)
             } else {
-                // Permission is already granted, proceed with taking the photo
-                dispatchTakePictureIntent()
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                takePictureLauncher.launch(intent)
             }
         }
     }
 
-    private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePictureIntent.resolveActivity(packageManager) != null) {
-            startActivityForResult(takePictureIntent, 1)
-        }
-    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            // Do something with the image bitmap
-            ivPicture.setImageBitmap(imageBitmap)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                takePictureLauncher.launch(intent)
+            } else {
+                Toast.makeText(this, getString(R.string.camera_permission_denied), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
