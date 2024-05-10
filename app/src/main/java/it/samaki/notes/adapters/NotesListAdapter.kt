@@ -1,6 +1,6 @@
 package it.samaki.notes.adapters
 
-import android.database.Cursor
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +10,10 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import it.samaki.notes.NoteClickListener
 import it.samaki.notes.R
+import it.samaki.notes.models.Note
 
 class NotesListAdapter(
-    private val cursor: Cursor,
+    private val noteList: List<Note>,
     private val listener: NoteClickListener
 ) : RecyclerView.Adapter<NotesViewHolder>() {
 
@@ -24,16 +25,23 @@ class NotesListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return cursor.count
+        return noteList.size
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
-        cursor.moveToPosition(position)
-        holder.tvTitle.text = cursor.getString(1)
-        holder.tvNote.text = cursor.getString(2)
-        holder.tvDate.text = cursor.getString(3)
+        holder.tvTitle.text = noteList[position].title
+        holder.tvNote.text = noteList[position].content
+        holder.tvDate.text = noteList[position].date
 
-        if (cursor.getInt(4) == 1) {
+        holder.ivPicture.setImageBitmap(noteList[position].image?.let {
+            BitmapFactory.decodeByteArray(
+                noteList[position].image,
+                0,
+                it.size
+            )
+        })
+
+        if (noteList[position].starred) {
             holder.ivStar.visibility = View.VISIBLE
         } else {
             holder.ivStar.visibility = View.INVISIBLE
@@ -49,6 +57,7 @@ class NotesViewHolder(listener: NoteClickListener, itemView: View) :
     val tvNote: TextView = itemView.findViewById(R.id.tv_note)
     val tvDate: TextView = itemView.findViewById(R.id.tv_date)
     val ivStar: ImageView = itemView.findViewById(R.id.iv_star)
+    val ivPicture: ImageView = itemView.findViewById(R.id.iv_picture)
 
     init {
         itemView.setOnClickListener {

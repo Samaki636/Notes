@@ -1,6 +1,6 @@
 package it.samaki.notes.adapters
 
-import android.database.Cursor
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +11,10 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import it.samaki.notes.R
 import it.samaki.notes.ToDoClickListener
+import it.samaki.notes.models.ToDo
 
 class ToDosListAdapter(
-    private val cursor: Cursor,
+    private val toDosList: List<ToDo>,
     private val listener: ToDoClickListener
 ) : RecyclerView.Adapter<ToDosViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDosViewHolder {
@@ -24,18 +25,26 @@ class ToDosListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return cursor.count
+        return toDosList.size
     }
 
     override fun onBindViewHolder(holder: ToDosViewHolder, position: Int) {
-        cursor.moveToPosition(position)
-        holder.tvContent.text = cursor.getString(1)
-        holder.checkBox.isChecked = cursor.getInt(2) == 1
+        holder.tvContent.text = toDosList[position].content
+        holder.checkBox.isChecked = toDosList[position].completed
 
-        if (cursor.getInt(3) == 1) {
+        if (toDosList[position].starred) {
             holder.ivStar.visibility = View.VISIBLE
         } else {
             holder.ivStar.visibility = View.INVISIBLE
+        }
+
+        if (toDosList[position].completed) {
+            holder.tvContent.paintFlags = holder.tvContent.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            holder.tvContent.setTextColor(holder.tvContent.context.getColor(R.color.grey))
+        } else {
+            holder.tvContent.paintFlags =
+                holder.tvContent.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            holder.tvContent.setTextColor(holder.tvContent.context.getColor(R.color.white))
         }
     }
 }

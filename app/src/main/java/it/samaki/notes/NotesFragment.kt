@@ -34,6 +34,7 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var selectedNote: Note
     private lateinit var dbHelper: DatabaseHelper
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,7 +57,8 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        updateRecycler()
+        notesListAdapter = NotesListAdapter(notes, noteClickListener)
+        recyclerView.adapter = notesListAdapter
 
         val addNoteLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -66,9 +68,9 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 dbHelper.insertNote(newNote)
                 notes.clear()
                 notes.addAll(dbHelper.getAllNotes())
-                notesListAdapter.notifyItemInserted(0)
+                notesListAdapter.notifyDataSetChanged()
+                recyclerView.smoothScrollToPosition(0)
             }
-            updateRecycler()
         }
 
         editNoteLauncher = registerForActivityResult(
@@ -76,12 +78,11 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         ) { result ->
             if (result.resultCode == RESULT_OK && result.data != null) {
                 val editedNote = result.data!!.getSerializableExtra("it.samaki.notes.note") as Note
-                val index = notes.indexOfFirst { it.id == editedNote.id }
                 dbHelper.updateNote(editedNote)
-                notes[index] = editedNote
-                notesListAdapter.notifyItemChanged(index)
+                notes.clear()
+                notes.addAll(dbHelper.getAllNotes())
+                notesListAdapter.notifyDataSetChanged()
             }
-            updateRecycler()
         }
 
         fabAdd.setOnClickListener {
@@ -105,6 +106,8 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun filter(text: String?) {
+        notes.clear()
+        notes.addAll(dbHelper.getAllNotes())
         val filteredList: MutableList<Note> = mutableListOf()
         for (note in notes) {
             if (note.title.lowercase().contains(text!!.lowercase()) ||
@@ -114,13 +117,9 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 filteredList.add(note)
             }
         }
-        notes = filteredList
+        notes.clear()
+        notes.addAll(filteredList)
         notesListAdapter.notifyDataSetChanged()
-    }
-
-    private fun updateRecycler() {
-        notesListAdapter = NotesListAdapter(dbHelper.getNotesCursor(), noteClickListener)
-        recyclerView.adapter = notesListAdapter
     }
 
     private val noteClickListener = object : NoteClickListener {
@@ -143,30 +142,27 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         popupMenu.show()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.popup_star_unstar -> {
                 if (!selectedNote.starred) {
                     selectedNote.starred = true
-                    dbHelper.updateNote(selectedNote)
                     Toast.makeText(
                         requireContext(),
                         getString(R.string.note_starred), Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     selectedNote.starred = false
-                    dbHelper.updateNote(selectedNote)
                     Toast.makeText(
                         requireContext(),
                         getString(R.string.note_unstarred), Toast.LENGTH_SHORT
                     ).show()
                 }
-
-                val index = notes.indexOfFirst { it.id == selectedNote.id }
-                notes[index] = selectedNote
-                notesListAdapter.notifyItemChanged(index)
-
-                updateRecycler()
+                dbHelper.updateNote(selectedNote)
+                notes.clear()
+                notes.addAll(dbHelper.getAllNotes())
+                notesListAdapter.notifyDataSetChanged()
                 return true
             }
 
@@ -179,7 +175,6 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                     requireContext(),
                     getString(R.string.note_deleted), Toast.LENGTH_SHORT
                 ).show()
-                updateRecycler()
                 return true
             }
         }

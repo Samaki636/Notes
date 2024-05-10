@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import it.samaki.notes.models.ToDo
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class AddToDoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,11 +51,14 @@ class AddToDoActivity : AppCompatActivity() {
                     .show()
                 return@setOnClickListener
             }
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
             if (!isOldToDo) {
-                toDo = ToDo(0, content, completed = false, starred = false)
+                toDo =
+                    ToDo(0, content, completed = false, formatter.format(Date()), starred = false)
             }
             toDo.content = content
+            toDo.date = formatter.format(Date())
 
             val intent = Intent()
             intent.putExtra("it.samaki.notes.to_do", toDo)

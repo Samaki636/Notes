@@ -2,7 +2,6 @@ package it.samaki.notes.database
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import it.samaki.notes.models.Note
@@ -22,13 +21,15 @@ class DatabaseHelper(context: Context) :
                     "title TEXT, " +
                     "content TEXT, " +
                     "date TEXT, " +
-                    "starred INTEGER)"
+                    "starred INTEGER, " +
+                    "image BLOB)"
         )
         db.execSQL(
             "CREATE TABLE todos (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "content TEXT, " +
                     "completed INTEGER, " +
+                    "date TEXT, " +
                     "starred INTEGER)"
         )
     }
@@ -45,6 +46,7 @@ class DatabaseHelper(context: Context) :
             put("content", note.content)
             put("date", note.date)
             put("starred", note.starred)
+            put("image", note.image)
         }
         writableDatabase.insert("notes", null, values)
     }
@@ -74,31 +76,41 @@ class DatabaseHelper(context: Context) :
         )
     }
 
-    fun getNotesCursor(): Cursor {
-        val db = writableDatabase
-        val cursor = db.query("notes", null, null, null, null, null, null)
-        return cursor
-    }
-
-    fun getToDosCursor(): Cursor {
-        val db = writableDatabase
-        val cursor = db.query("todos", null, null, null, null, null, null)
-        return cursor
-    }
-
     fun getAllNotes(): List<Note> {
         val notes = mutableListOf<Note>()
-        val cursor = readableDatabase.query("notes", null, null, null, null, null, null)
+        val cursor = readableDatabase.query(
+            "notes",
+            null,
+            null,
+            null,
+            null,
+            null,
+            "starred DESC, datetime(date) DESC"
+        )
         while (cursor.moveToNext()) {
-            notes.add(
-                Note(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getInt(4).toBoolean()
+            if (cursor.getBlob(5) != null) {
+                notes.add(
+                    Note(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getInt(4).toBoolean(),
+                        cursor.getBlob(5)
+                    )
                 )
-            )
+            } else {
+                notes.add(
+                    Note(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getInt(4).toBoolean(),
+                        null
+                    )
+                )
+            }
         }
         cursor.close()
         return notes
@@ -108,6 +120,7 @@ class DatabaseHelper(context: Context) :
         val values = ContentValues().apply {
             put("content", toDo.content)
             put("completed", toDo.completed)
+            put("date", toDo.date)
             put("starred", toDo.starred)
         }
         writableDatabase.insert("todos", null, values)
@@ -118,6 +131,7 @@ class DatabaseHelper(context: Context) :
         val values = ContentValues().apply {
             put("content", toDo.content)
             put("completed", toDo.completed)
+            put("date", toDo.date)
             put("starred", toDo.starred)
         }
         db.update(
@@ -139,14 +153,23 @@ class DatabaseHelper(context: Context) :
 
     fun getAllTodos(): List<ToDo> {
         val todos = mutableListOf<ToDo>()
-        val cursor = readableDatabase.query("todos", null, null, null, null, null, null)
+        val cursor = readableDatabase.query(
+            "todos",
+            null,
+            null,
+            null,
+            null,
+            null,
+            "starred DESC, datetime(date) DESC"
+        )
         while (cursor.moveToNext()) {
             todos.add(
                 ToDo(
                     cursor.getInt(0),
                     cursor.getString(1),
                     cursor.getInt(2).toBoolean(),
-                    cursor.getInt(3).toBoolean()
+                    cursor.getString(3),
+                    cursor.getInt(4).toBoolean()
                 )
             )
         }
