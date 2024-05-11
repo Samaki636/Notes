@@ -22,7 +22,7 @@ class DatabaseHelper(context: Context) :
                     "content TEXT, " +
                     "date TEXT, " +
                     "starred INTEGER, " +
-                    "image BLOB)"
+                    "image TEXT)"
         )
         db.execSQL(
             "CREATE TABLE todos (" +
@@ -46,7 +46,7 @@ class DatabaseHelper(context: Context) :
             put("content", note.content)
             put("date", note.date)
             put("starred", note.starred)
-            put("image", note.image)
+            put("image", note.picture)
         }
         writableDatabase.insert("notes", null, values)
     }
@@ -96,7 +96,7 @@ class DatabaseHelper(context: Context) :
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getInt(4).toBoolean(),
-                        cursor.getBlob(5)
+                        cursor.getString(5)
                     )
                 )
             } else {
@@ -107,7 +107,7 @@ class DatabaseHelper(context: Context) :
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getInt(4).toBoolean(),
-                        null
+                        ""
                     )
                 )
             }

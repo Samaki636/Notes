@@ -5,6 +5,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -17,6 +18,19 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Notes.NoActionBar"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="it.samaki.notes.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".MediaVisualizerActivity"
+            android:exported="false" />
         <activity
             android:name=".AddToDoActivity"
             android:exported="false" />

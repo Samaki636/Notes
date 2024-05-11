@@ -8,5 +8,5 @@ data class Note(
     var content: String,
     var date: String,
     var starred: Boolean,
-    @Suppress("ArrayInDataClass") var image: ByteArray?
+    var picture: String
 ) : Serializable

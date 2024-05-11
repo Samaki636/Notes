@@ -133,6 +133,12 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             selectedNote = notes[index]
             showPopup(cardView)
         }
+
+        override fun onPictureClick(index: Int) {
+            val intent = Intent(requireContext(), MediaVisualizerActivity::class.java)
+            intent.putExtra("it.samaki.notes.picture", notes[index].picture)
+            startActivity(intent)
+        }
     }
 
     private fun showPopup(cardView: CardView) {

@@ -3,7 +3,7 @@ package it.samaki.notes
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.EditText
@@ -16,17 +16,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.samaki.notes.models.Note
-import java.io.ByteArrayOutputStream
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+
+@Suppress("SpellCheckingInspection")
 class AddNoteActivity : AppCompatActivity() {
+    private lateinit var photoFile: File
     private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,15 +47,17 @@ class AddNoteActivity : AppCompatActivity() {
         val fabTakePhoto = findViewById<FloatingActionButton>(R.id.fab_take_photo)
         val bSave = findViewById<ImageButton>(R.id.b_save)
         val bCancel = findViewById<ImageButton>(R.id.b_back)
+
+        photoFile = createImageFile()
+
         lateinit var note: Note
         var isOldNote = false
 
         takePictureLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-            if (result.resultCode == RESULT_OK && result.data != null) {
-                val imageBitmap = result.data!!.extras?.get("data") as Bitmap
-                ivPicture.setImageBitmap(imageBitmap)
+            if (result.resultCode == RESULT_OK) {
+                ivPicture.setImageBitmap(BitmapFactory.decodeFile(photoFile.absolutePath))
             }
         }
 
@@ -72,28 +77,42 @@ class AddNoteActivity : AppCompatActivity() {
         bSave.setOnClickListener {
             val title = etTitle.text.toString()
             val content = etNote.text.toString()
-            val image = ivPicture.drawable
 
             if (title.isEmpty() || content.isEmpty()) {
                 Toast.makeText(this, getString(R.string.note_toast_text), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            val stream = ByteArrayOutputStream()
-            image.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream)
 
-            if (!isOldNote) {
-                note =
-                    Note(0, title, content, formatter.format(Date()), false, stream.toByteArray())
+            val image = ivPicture.drawable
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+            if (image != null) {
+                if (!isOldNote) {
+                    note =
+                        Note(
+                            0,
+                            title,
+                            content,
+                            formatter.format(Date()),
+                            false,
+                            photoFile.absolutePath
+                        )
+                }
+                note.picture = photoFile.absolutePath
+            } else {
+                if (!isOldNote) {
+                    note = Note(0, title, content, formatter.format(Date()), false, "")
+                }
             }
+
             note.title = title
             note.content = content
             note.date = formatter.format(Date())
-            note.image = stream.toByteArray()
 
             val intent = Intent()
             intent.putExtra("it.samaki.notes.note", note)
             setResult(RESULT_OK, intent)
+
             finish()
         }
 
@@ -108,6 +127,9 @@ class AddNoteActivity : AppCompatActivity() {
                 )
             } else {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val photoURI =
+                    FileProvider.getUriForFile(this, "it.samaki.notes.fileprovider", photoFile)
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 takePictureLauncher.launch(intent)
             }
         }
@@ -123,6 +145,9 @@ class AddNoteActivity : AppCompatActivity() {
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val photoURI =
+                    FileProvider.getUriForFile(this, "it.samaki.notes.fileprovider", photoFile)
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 takePictureLauncher.launch(intent)
             } else {
                 Toast.makeText(
@@ -132,5 +157,11 @@ class AddNoteActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+
+    private fun createImageFile(): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss".format(Date()), Locale.getDefault())
+        val imageFileName = "PNG_" + timeStamp + "_"
+        return File.createTempFile(imageFileName, ".png", cacheDir)
     }
 }

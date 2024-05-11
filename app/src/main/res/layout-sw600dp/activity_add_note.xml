@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="488dp"
@@ -8,31 +9,67 @@
     android:orientation="vertical"
     tools:context=".AddNoteActivity">
 
-    <EditText
-        android:id="@+id/et_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:hint="@string/title"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:padding="8dp"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/et_note"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="8dp"
         android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:gravity="top"
-        android:hint="@string/add_note"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:maxWidth="488dp"
-        android:padding="8dp"
-        android:textSize="16sp" />
+        android:backgroundTint="@color/black"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:hint="@string/title"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:padding="8dp"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_note"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:gravity="top"
+                android:hint="@string/add_note"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxWidth="488dp"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/iv_picture"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="start|bottom"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/picture" />
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_take_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="24dp"
+            android:backgroundTint="@color/purple"
+            android:contentDescription="@string/take_photo"
+            android:src="@drawable/baseline_add_a_photo_24"
+            app:shapeAppearance="@style/ShapeAppearanceOverlay.Material3.Button" />
+    </androidx.cardview.widget.CardView>
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"

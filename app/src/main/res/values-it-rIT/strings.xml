@@ -28,7 +28,6 @@
     <string name="to_do_unstarred">Promemoria rimosso dai preferiti</string>
     <string name="delete">Cancella</string>
     <string name="take_photo">Fai una foto</string>
-    <string name="toast_text">Perfavore, inserisci un titolo ed il contenuto dell\'appunto</string>
     <string name="picture">Foto</string>
     <string name="camera_permission_denied">L\'accesso alla fotocamera è richiesto per fare una foto!</string>
     <string name="note_image">Immagine promemoria</string>

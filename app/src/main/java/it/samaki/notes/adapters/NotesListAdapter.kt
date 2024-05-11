@@ -1,5 +1,6 @@
 package it.samaki.notes.adapters
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import it.samaki.notes.NoteClickListener
 import it.samaki.notes.R
 import it.samaki.notes.models.Note
+import java.io.File
 
 class NotesListAdapter(
     private val noteList: List<Note>,
@@ -33,13 +35,22 @@ class NotesListAdapter(
         holder.tvNote.text = noteList[position].content
         holder.tvDate.text = noteList[position].date
 
-        holder.ivPicture.setImageBitmap(noteList[position].image?.let {
-            BitmapFactory.decodeByteArray(
-                noteList[position].image,
-                0,
-                it.size
-            )
-        })
+        if (noteList[position].picture.isNotEmpty()) {
+            holder.ivPicture.visibility = View.VISIBLE
+            if (holder.ivPicture.drawable == null) {
+                holder.ivPicture.setImageBitmap(noteList[position].picture.let {
+                    Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeByteArray(
+                            File(noteList[position].picture).readBytes(),
+                            0,
+                            File(noteList[position].picture).readBytes().size
+                        ), 70, 70, false
+                    )
+                })
+            }
+        } else {
+            holder.ivPicture.visibility = View.INVISIBLE
+        }
 
         if (noteList[position].starred) {
             holder.ivStar.visibility = View.VISIBLE
@@ -67,6 +78,10 @@ class NotesViewHolder(listener: NoteClickListener, itemView: View) :
         itemView.setOnLongClickListener {
             listener.onLongClick(bindingAdapterPosition, notesContainer)
             true
+        }
+
+        ivPicture.setOnClickListener {
+            listener.onPictureClick(bindingAdapterPosition)
         }
     }
 }
