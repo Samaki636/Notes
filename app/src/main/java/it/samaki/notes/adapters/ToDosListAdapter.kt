@@ -40,7 +40,7 @@ class ToDosListAdapter(
 
         if (toDosList[position].completed) {
             holder.tvContent.paintFlags = holder.tvContent.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            holder.tvContent.setTextColor(holder.tvContent.context.getColor(R.color.grey))
+            holder.tvContent.setTextColor(holder.tvContent.context.getColor(R.color.grey800))
         } else {
             holder.tvContent.paintFlags =
                 holder.tvContent.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()

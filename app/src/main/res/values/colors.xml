@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#000000</color>
-    <color name="grey">#757575</color>
     <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
     <color name="yellow">#FFFF00</color>
     <color name="red">#FF0000</color>
     <color name="purple">#9D00FF</color>">
 
     //Material3 Dark
     <color name="grey900">#212121</color>
+    <color name="grey800">#424242</color>
 </resources>

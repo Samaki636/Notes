@@ -3,6 +3,7 @@ package it.samaki.notes
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -17,6 +18,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -60,6 +62,8 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         notesListAdapter = NotesListAdapter(notes, noteClickListener)
         recyclerView.adapter = notesListAdapter
 
+        setItemTouchHelper()
+
         val addNoteLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -100,7 +104,6 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 return true
             }
         })
-
         return view
     }
 
@@ -138,6 +141,38 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             val intent = Intent(requireContext(), MediaVisualizerActivity::class.java)
             intent.putExtra("it.samaki.notes.picture", notes[index].picture)
             startActivity(intent)
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        override fun onStarClick(index: Int) {
+            if (!notes[index].starred) {
+                notes[index].starred = true
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.note_starred), Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                notes[index].starred = false
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.note_unstarred), Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            dbHelper.updateNote(notes[index])
+            notes.clear()
+            notes.addAll(dbHelper.getAllNotes())
+            notesListAdapter.notifyDataSetChanged()
+        }
+
+        override fun onDeleteClick(index: Int) {
+            dbHelper.deleteNote(notes[index])
+            notes.removeAt(index)
+            notesListAdapter.notifyItemRemoved(index)
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.note_deleted), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -186,4 +221,102 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         }
         return false
     }
+
+    private fun setItemTouchHelper() {
+        ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            private val maxScrollX = (112f * resources.displayMetrics.density).toInt()
+            private var currentScrollX = 0
+            private var currentScrollXWhenActive = 0
+            private var startXWhenActive = 0f
+            private var isFirstTimeActive = false
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return true
+            }
+
+            override fun onSwiped(holder: RecyclerView.ViewHolder, direction: Int) {
+            }
+
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                val dragFlags = 0
+                val swipeFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                return makeMovementFlags(dragFlags, swipeFlags)
+            }
+
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                return Integer.MAX_VALUE.toFloat()
+            }
+
+            override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
+                return Integer.MAX_VALUE.toFloat()
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    if (dX == 0f) {
+                        currentScrollX = viewHolder.itemView.scrollX
+                        isFirstTimeActive = true
+                    }
+
+                    if (isCurrentlyActive) {
+                        var scrollOffset = currentScrollX + (-dX).toInt()
+                        if (scrollOffset > maxScrollX) {
+                            scrollOffset = maxScrollX
+                        } else if (scrollOffset < 0) {
+                            scrollOffset = 0
+                        }
+                        viewHolder.itemView.scrollTo(scrollOffset, 0)
+                    } else {
+                        if (isFirstTimeActive) {
+                            isFirstTimeActive = false
+                            currentScrollXWhenActive = viewHolder.itemView.scrollX
+                            startXWhenActive = dX
+                        }
+
+                        if (viewHolder.itemView.scrollX < currentScrollX) {
+                            viewHolder.itemView.scrollTo(
+                                (currentScrollXWhenActive * dX / startXWhenActive).toInt(),
+                                0
+                            )
+                        }
+
+                        if (viewHolder.itemView.scrollX > currentScrollX) {
+                            viewHolder.itemView.scrollTo(maxScrollX, 0)
+                        }
+                    }
+                }
+            }
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+                if (viewHolder.itemView.scrollX > maxScrollX) {
+                    viewHolder.itemView.scrollTo(maxScrollX, 0)
+                } else if (viewHolder.itemView.scrollX < 0) {
+                    viewHolder.itemView.scrollTo(0, 0)
+                }
+            }
+
+        }).apply {
+            attachToRecyclerView(recyclerView)
+        }
+    }
+
 }
