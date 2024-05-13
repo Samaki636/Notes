@@ -31,4 +31,6 @@
     <string name="picture">Foto</string>
     <string name="camera_permission_denied">L\'accesso alla fotocamera è richiesto per fare una foto!</string>
     <string name="note_image">Immagine promemoria</string>
+    <string name="category">Categoria</string>
+    <string name="category_name">Nome categoria</string>
 </resources>

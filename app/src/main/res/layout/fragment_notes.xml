@@ -28,6 +28,7 @@
         android:id="@+id/recycler_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:maxWidth="488dp"
         android:layout_below="@+id/sv_home"
         android:layout_centerHorizontal="true" />
 

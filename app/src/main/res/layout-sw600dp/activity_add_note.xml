@@ -79,7 +79,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/b_back"
+            android:id="@+id/btn_back"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
             android:text="@string/cancel" />
 
         <Button
-            android:id="@+id/b_save"
+            android:id="@+id/btn_save"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

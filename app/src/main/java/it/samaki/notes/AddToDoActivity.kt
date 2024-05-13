@@ -26,8 +26,8 @@ class AddToDoActivity : AppCompatActivity() {
         }
 
         val etContent = findViewById<EditText>(R.id.et_content)
-        val bSave = findViewById<ImageButton>(R.id.b_save)
-        val bCancel = findViewById<ImageButton>(R.id.b_back)
+        val bSave = findViewById<ImageButton>(R.id.btn_save)
+        val bCancel = findViewById<ImageButton>(R.id.btn_back)
         lateinit var toDo: ToDo
         var isOldToDo = false
 

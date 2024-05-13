@@ -39,7 +39,7 @@
             <Spinner
                 android:id="@+id/spinner_category"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="50dp" />
 
             <EditText
                 android:id="@+id/et_note"
@@ -84,7 +84,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/b_back"
+            android:id="@+id/btn_back"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
             android:src="@drawable/baseline_arrow_back_24" />
 
         <ImageButton
-            android:id="@+id/b_save"
+            android:id="@+id/btn_save"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

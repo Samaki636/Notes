@@ -18,6 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Notes.NoActionBar"
         tools:targetApi="31">
+        <activity
+            android:name=".AddCategoryActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="it.samaki.notes.fileprovider"
