@@ -36,17 +36,10 @@
                 android:textSize="32sp"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/et_category"
+            <Spinner
+                android:id="@+id/spinner_category"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:hint="@string/category"
-                android:importantForAutofill="no"
-                android:inputType="textCapSentences"
-                android:padding="8dp"
-                android:textSize="32sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content" />
 
             <EditText
                 android:id="@+id/et_note"

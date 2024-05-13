@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import it.samaki.notes.NoteClickListener
 import it.samaki.notes.R
@@ -63,49 +62,41 @@ class NotesListAdapter(
             "Work" -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_red))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_red))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_red))
             }
 
             "Shopping" -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_purple))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_purple))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_purple))
             }
 
             "Travel" -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_yellow))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_yellow))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_yellow))
             }
 
             "Personal" -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_blue))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_blue))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_blue))
             }
 
-            "Life" -> {
+            "Family" -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_green))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_green))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_green))
             }
 
             "School" -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_orange))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_orange))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_orange))
             }
 
-            "" -> {
+            "Category" -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
             }
 
             else -> {
                 holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
                 holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
-                holder.notesContainer.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
             }
         }
     }

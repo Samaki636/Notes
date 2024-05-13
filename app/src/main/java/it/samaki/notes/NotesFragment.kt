@@ -289,14 +289,14 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                             startXWhenActive = dX
                         }
 
-                        if (viewHolder.itemView.scrollX < currentScrollX) {
+                        if (viewHolder.itemView.scrollX < maxScrollX / 2) {
                             viewHolder.itemView.scrollTo(
                                 (currentScrollXWhenActive * dX / startXWhenActive).toInt(),
                                 0
                             )
                         }
 
-                        if (viewHolder.itemView.scrollX > currentScrollX) {
+                        if (viewHolder.itemView.scrollX > maxScrollX / 2) {
                             viewHolder.itemView.scrollTo(maxScrollX, 0)
                         }
                     }
