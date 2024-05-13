@@ -30,4 +30,5 @@
     <string name="picture">Picture</string>
     <string name="camera_permission_denied">Camera permission required to take a photo!</string>
     <string name="note_image">Note image</string>
+    <string name="category">Category</string>
 </resources>

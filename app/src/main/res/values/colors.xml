@@ -3,9 +3,20 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="transparent">#00000000</color>
-    <color name="yellow">#FFFF00</color>
+
+
     <color name="red">#FF0000</color>
-    <color name="purple">#9D00FF</color>">
+    <color name="dark_red">#430F0F</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="dark_yellow">#43430F</color>
+    <color name="purple">#800080</color>
+    <color name="dark_purple">#430F43</color>
+    <color name="blue">#0000FF</color>
+    <color name="dark_blue">#0D0F43</color>
+    <color name="green">#00FF00</color>
+    <color name="dark_green">#0F430D</color>
+    <color name="orange">#FFA500</color>
+    <color name="dark_orange">#43430F</color>
 
     //Material3 Dark
     <color name="grey900">#212121</color>

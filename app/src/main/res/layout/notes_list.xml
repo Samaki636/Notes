@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="600dp"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
     android:orientation="horizontal">
 
     <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/notes_container"
         android:layout_width="325dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="8dp">
 
@@ -106,7 +107,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         android:orientation="horizontal">
 
         <ImageButton

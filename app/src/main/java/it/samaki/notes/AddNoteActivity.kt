@@ -47,6 +47,7 @@ class AddNoteActivity : AppCompatActivity() {
         val fabTakePhoto = findViewById<FloatingActionButton>(R.id.fab_take_photo)
         val bSave = findViewById<ImageButton>(R.id.b_save)
         val bCancel = findViewById<ImageButton>(R.id.b_back)
+        val etCategory = findViewById<EditText>(R.id.et_category)
 
         photoFile = createImageFile()
 
@@ -65,6 +66,7 @@ class AddNoteActivity : AppCompatActivity() {
             note = (intent.getSerializableExtra("it.samaki.notes.old_note") as Note?)!!
             etTitle.setText(note.title)
             etNote.setText(note.content)
+            etCategory.setText(note.category)
             isOldNote = true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -77,6 +79,7 @@ class AddNoteActivity : AppCompatActivity() {
         bSave.setOnClickListener {
             val title = etTitle.text.toString()
             val content = etNote.text.toString()
+            val category = etCategory.text.toString()
 
             if (title.isEmpty() || content.isEmpty()) {
                 Toast.makeText(this, getString(R.string.note_toast_text), Toast.LENGTH_SHORT).show()
@@ -95,19 +98,21 @@ class AddNoteActivity : AppCompatActivity() {
                             content,
                             formatter.format(Date()),
                             false,
-                            photoFile.absolutePath
+                            photoFile.absolutePath,
+                            category
                         )
                 }
                 note.picture = photoFile.absolutePath
             } else {
                 if (!isOldNote) {
-                    note = Note(0, title, content, formatter.format(Date()), false, "")
+                    note = Note(0, title, content, formatter.format(Date()), false, "", category)
                 }
             }
 
             note.title = title
             note.content = content
             note.date = formatter.format(Date())
+            note.category = category
 
             val intent = Intent()
             intent.putExtra("it.samaki.notes.note", note)

@@ -8,5 +8,6 @@ data class Note(
     var content: String,
     var date: String,
     var starred: Boolean,
-    var picture: String
+    var picture: String,
+    var category: String
 ) : Serializable

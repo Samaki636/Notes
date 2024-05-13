@@ -115,7 +115,8 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         for (note in notes) {
             if (note.title.lowercase().contains(text!!.lowercase()) ||
                 note.content.lowercase().contains(text.lowercase()) ||
-                note.date.lowercase().contains(text.lowercase())
+                note.date.lowercase().contains(text.lowercase()) ||
+                note.category.lowercase().contains(text.lowercase())
             ) {
                 filteredList.add(note)
             }
@@ -224,7 +225,7 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun setItemTouchHelper() {
         ItemTouchHelper(object : ItemTouchHelper.Callback() {
-            private val maxScrollX = (112f * resources.displayMetrics.density).toInt()
+            private val maxScrollX = (120f * resources.displayMetrics.density).toInt()
             private var currentScrollX = 0
             private var currentScrollXWhenActive = 0
             private var startXWhenActive = 0f
