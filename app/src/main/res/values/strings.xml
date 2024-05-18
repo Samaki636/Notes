@@ -32,4 +32,5 @@
     <string name="note_image">Note image</string>
     <string name="category">Category</string>
     <string name="category_name">Category name</string>
+    <string name="color_code">Color code (HEX)</string>
 </resources>

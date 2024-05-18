@@ -4,6 +4,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import it.samaki.notes.R
+import it.samaki.notes.models.Category
 import it.samaki.notes.models.Note
 import it.samaki.notes.models.ToDo
 
@@ -25,6 +27,7 @@ class DatabaseHelper(context: Context) :
                     "image TEXT, " +
                     "category TEXT)"
         )
+
         db.execSQL(
             "CREATE TABLE todos (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -33,11 +36,67 @@ class DatabaseHelper(context: Context) :
                     "date TEXT, " +
                     "starred INTEGER)"
         )
+
+        db.execSQL(
+            "CREATE TABLE categories (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name TEXT, " +
+                    "color TEXT)"
+        )
+
+        var values = ContentValues().apply {
+            put("name", "Category")
+            put("color", "#424242")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
+            put("name", "Shopping")
+            put("color", "#430F43")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
+            put("name", "Travel")
+            put("color", "#43430F")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
+            put("name", "Personal")
+            put("color", "#0D0F43")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
+            put("name", "Family")
+            put("color", "#0F430D")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
+            put("name", "School")
+            put("color", "#4A3712")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
+            put("name", "Work")
+            put("color", "#430F0F")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
+            put("name", "Add more...")
+            put("color", "#424242")
+        }
+        db.insert("categories", null, values)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS notes")
         db.execSQL("DROP TABLE IF EXISTS todos")
+        db.execSQL("DROP TABLE IF EXISTS categories")
         onCreate(db)
     }
 
@@ -48,7 +107,7 @@ class DatabaseHelper(context: Context) :
             put("date", note.date)
             put("starred", note.starred)
             put("image", note.picture)
-            put("category", note.category)
+            put("category", note.category.id)
         }
         writableDatabase.insert("notes", null, values)
     }
@@ -61,7 +120,7 @@ class DatabaseHelper(context: Context) :
             put("date", note.date)
             put("starred", note.starred)
             put("image", note.picture)
-            put("category", note.category)
+            put("category", note.category.id)
         }
         db.update(
             "notes",
@@ -83,7 +142,7 @@ class DatabaseHelper(context: Context) :
     fun getAllNotes(): List<Note> {
         val notes = mutableListOf<Note>()
         val cursor = readableDatabase.query(
-            "notes",
+            "notes n JOIN categories c ON n.category = c.id",
             null,
             null,
             null,
@@ -101,7 +160,11 @@ class DatabaseHelper(context: Context) :
                         cursor.getString(3),
                         cursor.getInt(4).toBoolean(),
                         cursor.getString(5),
-                        cursor.getString(6)
+                        Category(
+                            cursor.getInt(cursor.getColumnIndexOrThrow("category")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("color"))
+                        )
                     )
                 )
             } else {
@@ -113,7 +176,11 @@ class DatabaseHelper(context: Context) :
                         cursor.getString(3),
                         cursor.getInt(4).toBoolean(),
                         "",
-                        cursor.getString(6)
+                        Category(
+                            cursor.getInt(cursor.getColumnIndexOrThrow("category")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("color"))
+                        )
                     )
                 )
             }
@@ -181,6 +248,61 @@ class DatabaseHelper(context: Context) :
         }
         cursor.close()
         return todos
+    }
+
+    fun insertCategory(category: Category) {
+        val values = ContentValues().apply {
+            put("name", category.name)
+            put("color", category.color)
+        }
+        writableDatabase.insert("categories", null, values)
+    }
+
+    fun updateCategory(category: Category) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("name", category.name)
+            put("color", category.color)
+        }
+        db.update(
+            "categories",
+            values,
+            "id = ?",
+            arrayOf(category.id.toString())
+        )
+    }
+
+    fun deleteCategory(category: Category) {
+        val db = writableDatabase
+        db.delete(
+            "categories",
+            "id = ?",
+            arrayOf(category.id.toString())
+        )
+    }
+
+    fun getAllCategories(): List<Category> {
+        val categories = mutableListOf<Category>()
+        val cursor = readableDatabase.query(
+            "categories",
+            null,
+            null,
+            null,
+            null,
+            null,
+            "id ASC"
+        )
+        while (cursor.moveToNext()) {
+            categories.add(
+                Category(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2)
+                )
+            )
+        }
+        cursor.close()
+        return categories
     }
 
     private fun Int.toBoolean() = this == 1

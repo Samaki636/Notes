@@ -33,4 +33,5 @@
     <string name="note_image">Immagine promemoria</string>
     <string name="category">Categoria</string>
     <string name="category_name">Nome categoria</string>
+    <string name="color_code">Codice colore (HEX)</string>
 </resources>

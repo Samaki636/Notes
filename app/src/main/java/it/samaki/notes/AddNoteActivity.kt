@@ -24,6 +24,8 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import it.samaki.notes.database.DatabaseHelper
+import it.samaki.notes.models.Category
 import it.samaki.notes.models.Note
 import java.io.File
 import java.text.SimpleDateFormat
@@ -35,7 +37,10 @@ import java.util.Locale
 class AddNoteActivity : AppCompatActivity() {
     private lateinit var photoFile: File
     private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
-    lateinit var category: String
+    private lateinit var category: Category
+    private var categories: MutableList<Category> = mutableListOf()
+    private lateinit var dbHelper: DatabaseHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,9 +51,11 @@ class AddNoteActivity : AppCompatActivity() {
             insets
         }
 
-        val categories =
-            mutableListOf("Category", "Shopping", "Travel", "Personal", "Family", "School", "Work", "Add more...")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        dbHelper = DatabaseHelper(this)
+        categories.clear()
+        categories.addAll(dbHelper.getAllCategories())
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories.map { it.name })
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         val etTitle = findViewById<EditText>(R.id.et_title)
@@ -64,16 +71,22 @@ class AddNoteActivity : AppCompatActivity() {
         lateinit var note: Note
         var isOldNote = false
 
+        spinnerCategory.adapter = adapter
+
         val addCategoryLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK && result.data != null) {
-                val newCategory = result.data!!.getSerializableExtra("it.samaki.notes.category") as String
-                categories.add(newCategory)
+                val newCategory = result.data!!.getSerializableExtra("it.samaki.notes.category") as Category
+                dbHelper.insertCategory(newCategory)
+                categories.clear()
+                categories.addAll(dbHelper.getAllCategories())
+                adapter.clear()
+                adapter.addAll(dbHelper.getAllCategories().map { it.name })
+                adapter.notifyDataSetChanged()
             }
         }
 
-        spinnerCategory.adapter = adapter
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -81,14 +94,17 @@ class AddNoteActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                if (position == categories.indexOf("Add more...")) {
+                if (position == categories.indexOfFirst { it.name == "Add more..." }) {
                     val intent = Intent(this@AddNoteActivity, AddCategoryActivity::class.java)
                     addCategoryLauncher.launch(intent)
-                    category = spinnerCategory.getItemAtPosition(categories.size - 1).toString()
+                    category = categories[categories.indexOfFirst {
+                        it.name == spinnerCategory.getItemAtPosition(categories.size - 1) as String
+                    }]
                     return
                 }
-                category = spinnerCategory.getItemAtPosition(position).toString()
-            }
+                category = categories[categories.indexOfFirst {
+                    it.name == spinnerCategory.getItemAtPosition(position) as String
+                }]            }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
@@ -107,7 +123,7 @@ class AddNoteActivity : AppCompatActivity() {
             note = (intent.getSerializableExtra("it.samaki.notes.old_note") as Note?)!!
             etTitle.setText(note.title)
             etNote.setText(note.content)
-            spinnerCategory.setSelection(categories.indexOf(note.category))
+            spinnerCategory.setSelection(categories.indexOfFirst { it.id == note.category.id })
 
             isOldNote = true
         } catch (e: Exception) {
@@ -121,7 +137,9 @@ class AddNoteActivity : AppCompatActivity() {
         btnSave.setOnClickListener {
             val title = etTitle.text.toString()
             val content = etNote.text.toString()
-            val category = spinnerCategory.getSelectedItem().toString()
+            val category = categories[categories.indexOfFirst {
+                it.name == spinnerCategory.getSelectedItem().toString()
+            }]
 
             if (title.isEmpty() || content.isEmpty()) {
                 Toast.makeText(this, getString(R.string.note_toast_text), Toast.LENGTH_SHORT).show()

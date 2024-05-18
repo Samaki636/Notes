@@ -1,6 +1,7 @@
 package it.samaki.notes
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageButton
@@ -8,11 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import it.samaki.notes.models.Category
 
 class AddCategoryActivity : AppCompatActivity() {
     private lateinit var btnCancel: ImageButton
     private lateinit var btnSave: ImageButton
-    private lateinit var etCategory: EditText
+    private lateinit var etName: EditText
+    private lateinit var etColor: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +29,8 @@ class AddCategoryActivity : AppCompatActivity() {
 
         btnCancel = findViewById(R.id.btn_back)
         btnSave = findViewById(R.id.btn_save)
-        etCategory = findViewById(R.id.et_category_name)
+        etName = findViewById(R.id.et_category_name)
+        etColor = findViewById(R.id.et_category_color)
 
         btnCancel.setOnClickListener {
             finish()
@@ -34,7 +38,13 @@ class AddCategoryActivity : AppCompatActivity() {
 
         btnSave.setOnClickListener {
             val intent = Intent()
-            intent.putExtra("it.samaki.notes.category", etCategory.text.toString())
+            intent.putExtra("it.samaki.notes.category",
+                Category(
+                    0,
+                    etName.text.toString(),
+                    etColor.text.toString()
+                )
+            )
             setResult(RESULT_OK, intent)
 
             finish()

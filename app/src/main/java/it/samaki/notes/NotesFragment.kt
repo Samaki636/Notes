@@ -116,7 +116,7 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             if (note.title.lowercase().contains(text!!.lowercase()) ||
                 note.content.lowercase().contains(text.lowercase()) ||
                 note.date.lowercase().contains(text.lowercase()) ||
-                note.category.lowercase().contains(text.lowercase())
+                note.category.name.lowercase().contains(text.lowercase())
             ) {
                 filteredList.add(note)
             }

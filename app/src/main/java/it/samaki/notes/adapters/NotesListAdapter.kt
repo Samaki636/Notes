@@ -2,6 +2,7 @@ package it.samaki.notes.adapters
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,53 +59,16 @@ class NotesListAdapter(
             holder.ivStar.visibility = View.INVISIBLE
         }
 
-        when (noteList[position].category) {
-            "Work" -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_red))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_red))
-            }
+        val color = Color.parseColor(noteList[position].category.color)
 
-            "Shopping" -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_purple))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_purple))
-            }
-
-            "Travel" -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_yellow))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_yellow))
-            }
-
-            "Personal" -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_blue))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_blue))
-            }
-
-            "Family" -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_green))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_green))
-            }
-
-            "School" -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_orange))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.dark_orange))
-            }
-
-            "Category" -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
-            }
-
-            else -> {
-                holder.tvNote.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
-                holder.tvDate.setBackgroundColor(holder.itemView.resources.getColor(R.color.grey800))
-            }
-        }
+        holder.tvNote.setBackgroundColor(color)
+        holder.tvDate.setBackgroundColor(color)
     }
 }
 
 class NotesViewHolder(listener: NoteClickListener, itemView: View) :
     RecyclerView.ViewHolder(itemView) {
-    val notesContainer: CardView = itemView.findViewById(R.id.notes_container)
+    private val notesContainer: CardView = itemView.findViewById(R.id.notes_container)
     val tvTitle: TextView = itemView.findViewById(R.id.tv_title)
     val tvNote: TextView = itemView.findViewById(R.id.tv_note)
     val tvDate: TextView = itemView.findViewById(R.id.tv_date)
