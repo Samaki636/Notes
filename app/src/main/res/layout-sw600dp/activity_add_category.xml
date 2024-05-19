@@ -13,12 +13,12 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:maxWidth="488dp"
         android:layout_margin="8dp"
-        app:cardCornerRadius="8dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/black"
         android:elevation="8dp"
-        android:backgroundTint="@color/black">
+        android:maxWidth="488dp"
+        app:cardCornerRadius="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,6 +37,18 @@
                 android:padding="8dp"
                 android:textSize="32sp"
                 android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_category_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:hint="@string/color_code"
+                android:importantForAutofill="no"
+                android:inputType="textNoSuggestions"
+                android:maxLines="1"
+                android:padding="8dp"
+                android:textSize="24sp" />
 
         </LinearLayout>
 

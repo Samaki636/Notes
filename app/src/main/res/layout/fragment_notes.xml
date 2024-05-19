@@ -28,9 +28,9 @@
         android:id="@+id/recycler_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:maxWidth="488dp"
         android:layout_below="@+id/sv_home"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:maxWidth="488dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_note"

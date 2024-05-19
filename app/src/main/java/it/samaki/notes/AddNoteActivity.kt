@@ -55,7 +55,8 @@ class AddNoteActivity : AppCompatActivity() {
         categories.clear()
         categories.addAll(dbHelper.getAllCategories())
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories.map { it.name })
+        val adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, categories.map { it.name })
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         val etTitle = findViewById<EditText>(R.id.et_title)
@@ -77,7 +78,8 @@ class AddNoteActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK && result.data != null) {
-                val newCategory = result.data!!.getSerializableExtra("it.samaki.notes.category") as Category
+                val newCategory =
+                    result.data!!.getSerializableExtra("it.samaki.notes.category") as Category
                 dbHelper.insertCategory(newCategory)
                 categories.clear()
                 categories.addAll(dbHelper.getAllCategories())

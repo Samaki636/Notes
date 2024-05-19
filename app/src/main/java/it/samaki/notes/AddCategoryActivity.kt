@@ -1,7 +1,6 @@
 package it.samaki.notes
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageButton
@@ -38,7 +37,8 @@ class AddCategoryActivity : AppCompatActivity() {
 
         btnSave.setOnClickListener {
             val intent = Intent()
-            intent.putExtra("it.samaki.notes.category",
+            intent.putExtra(
+                "it.samaki.notes.category",
                 Category(
                     0,
                     etName.text.toString(),

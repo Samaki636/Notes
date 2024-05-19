@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import it.samaki.notes.R
 import it.samaki.notes.models.Category
 import it.samaki.notes.models.Note
 import it.samaki.notes.models.ToDo
