@@ -74,18 +74,8 @@ class NotesViewHolder(listener: NoteClickListener, itemView: View) :
     val tvDate: TextView = itemView.findViewById(R.id.tv_date)
     val ivStar: ImageView = itemView.findViewById(R.id.iv_star)
     val ivPicture: ImageView = itemView.findViewById(R.id.iv_picture)
-    private val btnDelete: ImageView = itemView.findViewById(R.id.btn_delete)
-    private val btnStar: ImageView = itemView.findViewById(R.id.btn_star)
 
     init {
-        btnStar.setOnClickListener {
-            listener.onStarClick(bindingAdapterPosition)
-        }
-
-        btnDelete.setOnClickListener {
-            listener.onDeleteClick(bindingAdapterPosition)
-        }
-
         itemView.setOnClickListener {
             listener.onClick(bindingAdapterPosition)
         }

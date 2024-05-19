@@ -3,7 +3,6 @@ package it.samaki.notes
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
-import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -58,11 +57,13 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         searchView = view.findViewById(R.id.sv_home)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
         notesListAdapter = NotesListAdapter(notes, noteClickListener)
         recyclerView.adapter = notesListAdapter
 
-        setItemTouchHelper()
+        val itemTouchHelperLeft = ItemTouchHelper(swipeLeftCallBack)
+        val itemTouchHelperRight = ItemTouchHelper(swipeRightCallback)
+        itemTouchHelperLeft.attachToRecyclerView(recyclerView)
+        itemTouchHelperRight.attachToRecyclerView(recyclerView)
 
         val addNoteLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -223,101 +224,58 @@ class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         return false
     }
 
-    private fun setItemTouchHelper() {
-        ItemTouchHelper(object : ItemTouchHelper.Callback() {
-            private val maxScrollX = (120f * resources.displayMetrics.density).toInt()
-            private var currentScrollX = 0
-            private var currentScrollXWhenActive = 0
-            private var startXWhenActive = 0f
-            private var isFirstTimeActive = false
+    private val swipeLeftCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return false
+        }
 
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return true
-            }
-
-            override fun onSwiped(holder: RecyclerView.ViewHolder, direction: Int) {
-            }
-
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                val dragFlags = 0
-                val swipeFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-                return makeMovementFlags(dragFlags, swipeFlags)
-            }
-
-            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                return Integer.MAX_VALUE.toFloat()
-            }
-
-            override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
-                return Integer.MAX_VALUE.toFloat()
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    if (dX == 0f) {
-                        currentScrollX = viewHolder.itemView.scrollX
-                        isFirstTimeActive = true
-                    }
-
-                    if (isCurrentlyActive) {
-                        var scrollOffset = currentScrollX + (-dX).toInt()
-                        if (scrollOffset > maxScrollX) {
-                            scrollOffset = maxScrollX
-                        } else if (scrollOffset < 0) {
-                            scrollOffset = 0
-                        }
-                        viewHolder.itemView.scrollTo(scrollOffset, 0)
-                    } else {
-                        if (isFirstTimeActive) {
-                            isFirstTimeActive = false
-                            currentScrollXWhenActive = viewHolder.itemView.scrollX
-                            startXWhenActive = dX
-                        }
-
-                        if (viewHolder.itemView.scrollX < maxScrollX / 2) {
-                            viewHolder.itemView.scrollTo(
-                                (currentScrollXWhenActive * dX / startXWhenActive).toInt(),
-                                0
-                            )
-                        }
-
-                        if (viewHolder.itemView.scrollX > maxScrollX / 2) {
-                            viewHolder.itemView.scrollTo(maxScrollX, 0)
-                        }
-                    }
-                }
-            }
-
-            override fun clearView(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ) {
-                super.clearView(recyclerView, viewHolder)
-                if (viewHolder.itemView.scrollX > maxScrollX) {
-                    viewHolder.itemView.scrollTo(maxScrollX, 0)
-                } else if (viewHolder.itemView.scrollX < 0) {
-                    viewHolder.itemView.scrollTo(0, 0)
-                }
-            }
-
-        }).apply {
-            attachToRecyclerView(recyclerView)
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.bindingAdapterPosition
+            dbHelper.deleteNote(notes[position])
+            notes.removeAt(position)
+            notesListAdapter.notifyItemRemoved(position)
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.note_deleted), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
+    private val swipeRightCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return false
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.bindingAdapterPosition
+
+            if (!notes[position].starred) {
+                notes[position].starred = true
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.note_starred), Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                notes[position].starred = false
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.note_unstarred), Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            dbHelper.updateNote(notes[position])
+            notes.clear()
+            notes.addAll(dbHelper.getAllNotes())
+            notesListAdapter.notifyDataSetChanged()
+        }
+    }
 }

@@ -104,11 +104,11 @@ class AddNoteActivity : AppCompatActivity() {
                 }
                 category = categories[categories.indexOfFirst {
                     it.name == spinnerCategory.getItemAtPosition(position) as String
-                }]            }
+                }]
+            }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
-
         }
 
         takePictureLauncher = registerForActivityResult(
