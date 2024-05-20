@@ -1,4 +1,4 @@
-package it.samaki.notes
+package it.samaki.notes.fragments
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
@@ -25,8 +25,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import it.samaki.notes.R
+import it.samaki.notes.activities.AddNoteActivity
+import it.samaki.notes.activities.MediaVisualizerActivity
 import it.samaki.notes.adapters.NotesListAdapter
 import it.samaki.notes.database.DatabaseHelper
+import it.samaki.notes.listeners.NoteClickListener
 import it.samaki.notes.models.Note
 
 class NotesFragment : Fragment(), PopupMenu.OnMenuItemClickListener {

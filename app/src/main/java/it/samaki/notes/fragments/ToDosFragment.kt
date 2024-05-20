@@ -1,4 +1,4 @@
-package it.samaki.notes
+package it.samaki.notes.fragments
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
@@ -20,8 +20,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import it.samaki.notes.R
+import it.samaki.notes.activities.AddToDoActivity
 import it.samaki.notes.adapters.ToDosListAdapter
 import it.samaki.notes.database.DatabaseHelper
+import it.samaki.notes.listeners.ToDoClickListener
 import it.samaki.notes.models.ToDo
 
 class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {

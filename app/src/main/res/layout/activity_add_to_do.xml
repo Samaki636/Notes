@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_margin="16dp"
     android:orientation="vertical"
-    tools:context=".AddToDoActivity">
+    tools:context=".activities.AddToDoActivity">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

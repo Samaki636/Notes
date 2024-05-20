@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import it.samaki.notes.NoteClickListener
+import it.samaki.notes.listeners.NoteClickListener
 import it.samaki.notes.R
 import it.samaki.notes.models.Note
 import java.io.File

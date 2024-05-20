@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ToDosFragment">
+    tools:context=".fragments.ToDosFragment">
 
     <SearchView
         android:id="@+id/sv_home"

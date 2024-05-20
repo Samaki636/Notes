@@ -1,4 +1,4 @@
-package it.samaki.notes
+package it.samaki.notes.activities
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -9,6 +9,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigationrail.NavigationRailView
+import it.samaki.notes.R
+import it.samaki.notes.fragments.NotesFragment
+import it.samaki.notes.fragments.ToDosFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

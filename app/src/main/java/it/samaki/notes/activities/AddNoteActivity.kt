@@ -1,4 +1,4 @@
-package it.samaki.notes
+package it.samaki.notes.activities
 
 import android.Manifest
 import android.content.Intent
@@ -24,6 +24,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import it.samaki.notes.R
 import it.samaki.notes.database.DatabaseHelper
 import it.samaki.notes.models.Category
 import it.samaki.notes.models.Note

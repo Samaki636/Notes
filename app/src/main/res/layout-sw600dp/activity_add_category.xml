@@ -8,7 +8,7 @@
     android:layout_gravity="center_horizontal"
     android:layout_margin="16dp"
     android:orientation="vertical"
-    tools:context=".AddCategoryActivity">
+    tools:context=".activities.AddCategoryActivity">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

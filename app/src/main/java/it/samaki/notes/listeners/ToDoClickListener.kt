@@ -1,4 +1,4 @@
-package it.samaki.notes
+package it.samaki.notes.listeners
 
 import androidx.cardview.widget.CardView
 
