@@ -87,6 +87,9 @@ class AddNoteActivity : AppCompatActivity() {
                 adapter.clear()
                 adapter.addAll(dbHelper.getAllCategories().map { it.name })
                 adapter.notifyDataSetChanged()
+                spinnerCategory.setSelection(categories.indexOfLast { it.name == newCategory.name })
+            } else {
+                spinnerCategory.setSelection(0)
             }
         }
 
@@ -100,10 +103,6 @@ class AddNoteActivity : AppCompatActivity() {
                 if (position == categories.indexOfFirst { it.name == "Add more..." }) {
                     val intent = Intent(this@AddNoteActivity, AddCategoryActivity::class.java)
                     addCategoryLauncher.launch(intent)
-                    category = categories[categories.indexOfFirst {
-                        it.name == spinnerCategory.getItemAtPosition(categories.size - 1) as String
-                    }]
-                    return
                 }
                 category = categories[categories.indexOfFirst {
                     it.name == spinnerCategory.getItemAtPosition(position) as String
