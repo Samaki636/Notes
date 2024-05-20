@@ -50,6 +50,12 @@ class DatabaseHelper(context: Context) :
         db.insert("categories", null, values)
 
         values = ContentValues().apply {
+            put("name", "Add more...")
+            put("color", "#424242")
+        }
+        db.insert("categories", null, values)
+
+        values = ContentValues().apply {
             put("name", "Shopping")
             put("color", "#430F43")
         }
@@ -82,12 +88,6 @@ class DatabaseHelper(context: Context) :
         values = ContentValues().apply {
             put("name", "Work")
             put("color", "#430F0F")
-        }
-        db.insert("categories", null, values)
-
-        values = ContentValues().apply {
-            put("name", "Add more...")
-            put("color", "#424242")
         }
         db.insert("categories", null, values)
     }
