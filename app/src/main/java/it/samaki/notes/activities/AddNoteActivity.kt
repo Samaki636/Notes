@@ -229,6 +229,6 @@ class AddNoteActivity : AppCompatActivity() {
     private fun createImageFile(): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss".format(Date()), Locale.getDefault())
         val imageFileName = "PNG_" + timeStamp + "_"
-        return File.createTempFile(imageFileName, ".png", cacheDir)
+        return File.createTempFile(imageFileName, ".png", filesDir)
     }
 }
