@@ -3,6 +3,10 @@ package it.samaki.notes.fragments
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -17,6 +21,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -63,6 +68,11 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
         toDosListAdapter = ToDosListAdapter(toDos, toDoClickListener)
         recyclerView.adapter = toDosListAdapter
+
+        val itemTouchHelperLeft = ItemTouchHelper(swipeLeftCallBack)
+        val itemTouchHelperRight = ItemTouchHelper(swipeRightCallback)
+        itemTouchHelperLeft.attachToRecyclerView(recyclerView)
+        itemTouchHelperRight.attachToRecyclerView(recyclerView)
 
         val addToDoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -188,4 +198,137 @@ class ToDosFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         }
         return false
     }
+
+    private val swipeLeftCallBack =
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.bindingAdapterPosition
+                dbHelper.deleteTodo(toDos[position])
+                toDos.removeAt(position)
+                toDosListAdapter.notifyItemRemoved(position)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.note_deleted), Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val swipeProgress = (dX / viewHolder.itemView.width.toFloat()) * -1
+
+                val background = RectF(
+                    context!!.resources.displayMetrics.widthPixels.toFloat(),
+                    viewHolder.itemView.top.toFloat(),
+                    0f,
+                    viewHolder.itemView.bottom.toFloat()
+                )
+
+                val color = Color.argb(
+                    (swipeProgress * 255).toInt(),
+                    255,
+                    0,
+                    0
+                )
+
+                c.drawRect(background, Paint().apply { this.color = color })
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        }
+
+    private val swipeRightCallback =
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.bindingAdapterPosition
+
+                if (!toDos[position].starred) {
+                    toDos[position].starred = true
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.note_starred), Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    toDos[position].starred = false
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.note_unstarred), Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                dbHelper.updateTodo(toDos[position])
+                toDos.clear()
+                toDos.addAll(dbHelper.getAllTodos())
+                toDosListAdapter.notifyDataSetChanged()
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val swipeProgress = dX / viewHolder.itemView.width.toFloat()
+
+                val background = RectF(
+                    context!!.resources.displayMetrics.widthPixels.toFloat(),
+                    viewHolder.itemView.top.toFloat(),
+                    0f,
+                    viewHolder.itemView.bottom.toFloat()
+                )
+
+                val color = Color.argb(
+                    (swipeProgress * 255).toInt(),
+                    255,
+                    255,
+                    0
+                )
+
+                c.drawRect(background, Paint().apply { this.color = color })
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        }
 }
